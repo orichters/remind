@@ -4,13 +4,15 @@
 # |  AGPL-3.0, you are granted additional permissions described in the
 # |  REMIND License Exception, version 1.0 (see LICENSE file).
 # |  Contact: remind@pik-potsdam.de
+
 # Downscaling of REMIND emissions to GAINS sectors using ECLIPSE emission and activity data
-#rm(list=ls())
-#library(moinput)
-library(dplyr)
-library(luscale) # rename_dimnames
-library(remind)
-library(gdx) # writeGDX
+
+cat("  Loading R packages: 'luscale', 'remind', 'magclass', 'gdx'\n")
+suppressPackageStartupMessages(library(luscale)) # speed_aggregate
+suppressPackageStartupMessages(library(remind)) # reportMacroEconomy, reportPE, reportSE, reportFE, deletePlus
+suppressPackageStartupMessages(library(magclass)) # mbind, read.magpie, add_columns, collapseNames, getNames, getRegions, as.magpie, setYears, getSets, dimSums
+suppressPackageStartupMessages(library(gdx)) # writeGDX
+
 
 # read SSP scenario
 load("config.Rdata")
@@ -69,10 +71,12 @@ RA <- RA["GLO",,invert=TRUE]
 ###################   select GAINS data    ###################
 ##############################################################
 
-cat("List of sectors that are not in the GAINS2REMIND mapping because there is no emission and/or activity data.\nThese sectors will be omitted in the calculations!\n")
-
 missing_sectors <- setdiff(getNames(ef_gains,dim=1),map_GAINS2REMIND$GAINS)
-cat(missing_sectors,sep="\n")
+if(!is.null(missing_sectors)) {
+    cat("  Sectors omitted from the GAINS2REMIND mapping and from the calculations, due to lack of emission and/or activity data:\n")
+    cat(paste0("    ",missing_sectors),sep="\n")
+}
+
 
 # select GAINS data according to order in mapping and bring regions into same (alphabetically sorted) order as RA
 ef_gains  <- ef_gains[getRegions(RA),,map_GAINS2REMIND$GAINS]

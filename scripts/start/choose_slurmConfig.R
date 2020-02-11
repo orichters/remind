@@ -22,38 +22,35 @@ get_line <- function(){
 }
 
 choose_slurmConfig <- function() {
-  
+  require(crayon, quietly = TRUE, warn.conflicts = FALSE)
+
   slurm <- suppressWarnings(ifelse(system2("srun",stdout=FALSE,stderr=FALSE) != 127, TRUE, FALSE))
   if (slurm) { 
-    modes <- c(" 1: SLURM standby               12   nash H12             [recommended]",
-               " 2: SLURM standby               13   nash H12 coupled",
-               " 3: SLURM standby               16   nash H12+",
-               " 4: SLURM standby                1   nash debug, testOneRegi, reporting",
-               "-----------------------------------------------------------------------",
-               " 5: SLURM priority              12   nash H12             [recommended]",
-               " 6: SLURM priority              13   nash H12 coupled",
-               " 7: SLURM priority              16   nash H12+",
-               " 8: SLURM priority               1   nash debug, testOneRegi, reporting",
-               "-----------------------------------------------------------------------",
-               " 9: SLURM short                 12   nash H12",
-               "10: SLURM short                 16   nash H12+",
-               "11: SLURM short                  1   nash debug, testOneRegi, reporting",
-               "12: SLURM medium                 1   negishi",
-               "13: SLURM long                   1   negishi",
-               "-----------------------------------------------------------------------",
-               '14: SLURM medium                12   nash H12',
-               NULL)
-
     cat("\nCurrent cluster utilization:\n")
     system("sclass")
-    cat("\n")
+    cat("\n\n")
 
-    cat("\nPlease choose the SLURM configuration for your submission:\n")
-    cat("    QOS             tasks per node   suitable for\n=======================================================================\n")
-    #cat(paste(1:length(modes), modes, sep=": " ),sep="\n")
-    cat(modes,sep="\n")
-    cat("=======================================================================\n")
-    cat("Number: ")
+    cat(paste0(                  "Please choose the SLURM configuration for your submission:\n",
+               crayon::blue     ("    QOS             tasks per node   suitable for\n"),
+               crayon::blue     ("=======================================================================\n"),
+               crayon::green(" 1:")," SLURM standby               12   nash H12             [recommended]\n",
+               crayon::green(" 2:")," SLURM standby               13   nash H12 coupled\n",
+               crayon::green(" 3:")," SLURM standby               16   nash H12+\n",
+               crayon::green(" 4:")," SLURM standby                1   nash debug, testOneRegi, reporting\n",
+               crayon::blue     ("--------------------------------------------------------------\n"),
+               crayon::green(" 5:")," SLURM priority              12   nash H12             [recommended]\n",
+               crayon::green(" 6:")," SLURM priority              13   nash H12 coupled\n",
+               crayon::green(" 7:")," SLURM priority              16   nash H12+\n",
+               crayon::green(" 8:")," SLURM priority               1   nash debug, testOneRegi, reporting\n",
+               crayon::blue     ("--------------------------------------------------------------\n"),
+               crayon::green(" 9:")," SLURM short                 12   nash H12\n",
+               crayon::green("10:")," SLURM short                 16   nash H12+\n",
+               crayon::green("11:")," SLURM short                  1   nash debug, testOneRegi, reporting\n",
+               crayon::green("12:")," SLURM medium                 1   negishi\n",
+               crayon::green("13:")," SLURM long                   1   negishi\n",
+               crayon::blue     ("=======================================================================\n"),
+               crayon::green    ("Number: ")))
+
     identifier <- get_line()
     identifier <- as.numeric(strsplit(identifier,",")[[1]])
     comp <- switch(identifier,

@@ -651,4 +651,8 @@ loop(ttot$( (ttot.val > cm_startyear) AND (ttot.val > 2020) ),  !! only change v
 display p_adj_seed_te, p_adj_coeff, p_varyAdj_mult_adjSeedTe, p_varyAdj_mult_adjCoeff;
 
 $endif.CO2priceDependent_AdjCosts
+
+* Write some info into the log.txt file. 
+Execute "printf '\nIteration '; grep LOOPS full.log | tail -n -1 | cut -d' ' -f5; printf  'Time: '; date '+%H:%M:%S'";
+
 *** EOF ./core/postsolve.gms

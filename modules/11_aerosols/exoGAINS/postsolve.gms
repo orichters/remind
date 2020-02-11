@@ -19,7 +19,7 @@ if((o_modelstat gt 2),
   );
 
 *** Calcualte AP emissions
-Execute "Rscript exoGAINSAirpollutants.R";
+Execute "printf '\nExecuting Rscript exoGAINSAirpollutants.R:\n'; Rscript --no-site-file exoGAINSAirpollutants.R";
 
 *** Read input ref results for tall with following dimensions: pm_emiAPexsolve(tall,all_regi,all_sectorEmi,emiRCP)
 if((cm_startyear gt 2005),
