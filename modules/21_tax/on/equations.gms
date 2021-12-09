@@ -55,7 +55,7 @@ $endif.cm_implicitFE
 *'  Documentation of overall tax approach is above at q21_taxrev.
 ***---------------------------------------------------------------------------
 q21_taxrevGHG(t,regi)$(t.val ge max(2010,cm_startyear))..
-v21_taxrevGHG(t,regi) =e= ( pm_taxCO2eq(t,regi)  + pm_taxCO2eqSCC(t,regi) + pm_taxCO2eqHist(t,regi)) * (vm_co2eq(t,regi) - vm_emiMacSector(t,regi,"co2luc")$(cm_multigasscen ne 3))
+v21_taxrevGHG(t,regi) =e= ( pm_taxCO2eq(t,regi)  + pm_taxCO2eqSCC(t,regi) + pm_taxCO2eqHist(t,regi) + pm_taxCO2eq_regi(t,regi)) * (vm_co2eq(t,regi) - vm_emiMacSector(t,regi,"co2luc")$(cm_multigasscen ne 3))
                            - p21_taxrevGHG0(t,regi);
 
 ***---------------------------------------------------------------------------
@@ -63,7 +63,7 @@ v21_taxrevGHG(t,regi) =e= ( pm_taxCO2eq(t,regi)  + pm_taxCO2eqSCC(t,regi) + pm_t
 *'  Documentation of overall tax approach is above at q21_taxrev.
 ***---------------------------------------------------------------------------
 q21_taxrevCO2luc(t,regi)$(t.val ge max(2010,cm_startyear))..
-v21_taxrevCO2luc(t,regi) =e= ( pm_taxCO2eq(t,regi)  + pm_taxCO2eqSCC(t,regi) + pm_taxCO2eqHist(t,regi))* cm_cprice_red_factor * vm_emiMacSector(t,regi,"co2luc")$(cm_multigasscen ne 3)
+v21_taxrevCO2luc(t,regi) =e= ( pm_taxCO2eq(t,regi)  + pm_taxCO2eqSCC(t,regi) + pm_taxCO2eqHist(t,regi) + pm_taxCO2eq_regi(t,regi))* cm_cprice_red_factor * vm_emiMacSector(t,regi,"co2luc")$(cm_multigasscen ne 3)
                            - p21_taxrevCO2LUC0(t,regi);
 
 ***---------------------------------------------------------------------------
@@ -82,7 +82,7 @@ v21_taxrevCCS(t,regi)
 *'  Documentation of overall tax approach is above at q21_taxrev.
 ***---------------------------------------------------------------------------
 q21_taxrevNetNegEmi(t,regi)$(t.val ge max(2010,cm_startyear))..
-v21_taxrevNetNegEmi(t,regi) =e=  cm_frac_NetNegEmi * pm_taxCO2eq(t,regi) * v21_emiALLco2neg(t,regi)
+v21_taxrevNetNegEmi(t,regi) =e=  cm_frac_NetNegEmi * (pm_taxCO2eq(t,regi) + pm_taxCO2eq_regi(t,regi))* v21_emiALLco2neg(t,regi)
                                  - p21_taxrevNetNegEmi0(t,regi);
 
 ***---------------------------------------------------------------------------
