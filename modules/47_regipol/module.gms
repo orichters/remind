@@ -15,6 +15,8 @@
 *' @authors Renato Rodrigues, Felix Schreyer 
 
 *###################### R SECTION START (MODULETYPES) ##########################
+$Ifi "%regipol%" == "NDC" $include "./modules/47_regipol/NDC/realization.gms"
+$Ifi "%regipol%" == "netZero" $include "./modules/47_regipol/netZero/realization.gms"
 $Ifi "%regipol%" == "none" $include "./modules/47_regipol/none/realization.gms"
 $Ifi "%regipol%" == "regiCarbonPrice" $include "./modules/47_regipol/regiCarbonPrice/realization.gms"
 *###################### R SECTION END (MODULETYPES) ############################

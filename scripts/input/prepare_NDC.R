@@ -37,5 +37,5 @@ prepare_NDC<-function(gdx, cfg){
 
   getNames(p45_BAU_reg_emi_wo_LU_bunkers) <- NULL
   write.magpie(p45_BAU_reg_emi_wo_LU_bunkers,"./modules/45_carbonprice/NDC/input/p45_BAU_reg_emi_wo_LU_bunkers.cs4r", comment="** description: Regional GHG emi (excl. LU and bunkers) in BAU scenario \n*** unit: Mt CO2eq/yr \n*** file created with scripts/input/prepare_NDC.R")
-
+  write.magpie(p45_BAU_reg_emi_wo_LU_bunkers,"./modules/47_regipol/NDC/input/p45_BAU_reg_emi_wo_LU_bunkers.cs4r", comment="** description: Regional GHG emi (excl. LU and bunkers) in BAU scenario \n*** unit: Mt CO2eq/yr \n*** file created with scripts/input/prepare_NDC.R")
 }
