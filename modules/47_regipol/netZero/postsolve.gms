@@ -12,14 +12,14 @@ if(ord(iteration)>10, !!start only after 10 iterations, so to already have some 
 p47_2020_regi(regi)=vm_co2eq.l("2020",regi)*sm_c_2_co2*1000;
 
 p47_actual_co2eq_regi(nz_reg2050) = vm_co2eq.l("2050",nz_reg2050)*sm_c_2_co2*1000 + vm_emiFgas.L("2050",nz_reg2050,"emiFgasTotal")
-*or*    substract the bunker emissions
+***or*    substract the bunker emissions
     - sum(se2fe(enty,enty2,te),
         pm_emifac("2050",nz_reg2050,enty,enty2,te,"co2")
         * vm_demFeSector.l("2050",nz_reg2050,enty,enty2,"trans","other") * sm_c_2_co2 * 1000
       ); 
 
 p47_actual_co2eq_regi(nz_reg2060) = (vm_emiTe.l("2060",nz_reg2060,"co2") + vm_emiMac.L("2060",nz_reg2060,"co2") + vm_emiCdr.L("2060",nz_reg2060,"co2"))*sm_c_2_co2*1000
-*or*    substract the bunker emissions
+***or*    substract the bunker emissions
     - sum(se2fe(enty,enty2,te),
         pm_emifac("2060",nz_reg2060,enty,enty2,te,"co2")
         * vm_demFeSector.l("2060",nz_reg2060,enty,enty2,"trans","other") * sm_c_2_co2 * 1000
@@ -29,7 +29,7 @@ p47_actual_co2eq_regi(nz_reg2060) = (vm_emiTe.l("2060",nz_reg2060,"co2") + vm_em
 p47_taxCO2eq_factor(nz_reg)=(1+(p47_actual_co2eq_regi(nz_reg)/p47_2020_regi(nz_reg)))**2;
 
 ***calculate relative change in markup, taking into account change in tax:
-p47_taxCO2eq_regi_factor(nz_reg) = max(1-0.75*1.01^(-iteration.val),((p47_taxCO2eq_last("2050",nz_reg)+p47_taxCO2eq_regi_last("2050",nz_reg))*p47_taxCO2eq_factor(nz_reg)-pm_taxCO2eq("2050",nz_reg))
+p47_taxCO2eq_regi_factor(nz_reg) = max(1-0.75*1.01**(-iteration.val),((p47_taxCO2eq_last("2050",nz_reg)+p47_taxCO2eq_regi_last("2050",nz_reg))*p47_taxCO2eq_factor(nz_reg)-pm_taxCO2eq("2050",nz_reg))
                                /(p47_taxCO2eq_regi_last("2050",nz_reg)+0.0001));!!to avoid division by zero in case of mark-up being not necessary
 
 
