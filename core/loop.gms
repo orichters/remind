@@ -152,10 +152,10 @@ $batinclude "./modules/include.gms" postsolve
 ***                  save gdx
 *--------------------------------------------------------------------------
 
-** Hack to add regi tax to CO2 tax
-pm_taxCO2eq_nonregi(ttot,regi) = pm_taxCO2eq(ttot,regi)
-pm_taxCO2eq(ttot,regi) = pm_taxCO2eq(ttot,regi) + pm_taxCO2eq_regi(ttot,regi)
-** continued after saving
+*** Hack to add regi tax to CO2 tax
+pm_taxCO2eq_nonregi(ttot,regi) = pm_taxCO2eq(ttot,regi);
+pm_taxCO2eq(ttot,regi) = pm_taxCO2eq(ttot,regi) + pm_taxCO2eq_regi(ttot,regi);
+*** continued after saving
 
 *** write the fulldata.gdx file after each optimal iteration
 *AJS* in Nash status 7 is considered optimal in that respect (see definition of
@@ -181,9 +181,9 @@ logfile.nr = 2;
 );  !! close iteration loop
 
 
-** undo hack to add regi tax to CO2 tax
-pm_taxCO2eq(ttot,regi) = pm_taxCO2eq_nonregi(ttot,regi)
-** continued after saving
+*** undo hack to add regi tax to CO2 tax
+pm_taxCO2eq(ttot,regi) = pm_taxCO2eq_nonregi(ttot,regi);
+*** end of hack
 
 
 *** EOF ./core/loop.gms

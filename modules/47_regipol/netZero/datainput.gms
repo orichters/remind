@@ -13,14 +13,16 @@ pm_taxCO2eq_regi("2045",nz_reg2050)=15;
 pm_taxCO2eq_regi("2050",nz_reg2050)=20;
 pm_taxCO2eq_regi("2055",nz_reg2050)=18;
 pm_taxCO2eq_regi("2060",nz_reg2050)=16;
-pm_taxCO2eq_regi("2065",nz_reg2050)=14;
 pm_taxCO2eq_regi("2070",nz_reg2050)=12;
-pm_taxCO2eq_regi("2075",nz_reg2050)=10;
 pm_taxCO2eq_regi("2080",nz_reg2050)=8;
-pm_taxCO2eq_regi("2085",nz_reg2050)=6;
 pm_taxCO2eq_regi("2090",nz_reg2050)=4;
-pm_taxCO2eq_regi("2095",nz_reg2050)=2;
 
+if (not setGlobal test_TS $if %cm_less_TS% == "off",
+pm_taxCO2eq_regi("2065",nz_reg2050)=14;
+pm_taxCO2eq_regi("2075",nz_reg2050)=10;
+pm_taxCO2eq_regi("2085",nz_reg2050)=6;
+pm_taxCO2eq_regi("2095",nz_reg2050)=2;
+);
 
 *** profile for countries with 2060 target
 pm_taxCO2eq_regi("2035",nz_reg2060)=2;
@@ -29,14 +31,16 @@ pm_taxCO2eq_regi("2045",nz_reg2060)=9;
 pm_taxCO2eq_regi("2050",nz_reg2060)=14;
 pm_taxCO2eq_regi("2055",nz_reg2060)=20;
 pm_taxCO2eq_regi("2060",nz_reg2060)=28;
-pm_taxCO2eq_regi("2065",nz_reg2060)=22;
 pm_taxCO2eq_regi("2070",nz_reg2060)=17;
-pm_taxCO2eq_regi("2075",nz_reg2060)=13;
 pm_taxCO2eq_regi("2080",nz_reg2060)=10;
-pm_taxCO2eq_regi("2085",nz_reg2060)=7;
 pm_taxCO2eq_regi("2090",nz_reg2060)=4;
-pm_taxCO2eq_regi("2095",nz_reg2060)=2;
 
+if (not setGlobal test_TS $if %cm_less_TS% == "off",
+pm_taxCO2eq_regi("2065",nz_reg2060)=22;
+pm_taxCO2eq_regi("2075",nz_reg2060)=13;
+pm_taxCO2eq_regi("2085",nz_reg2060)=7;
+pm_taxCO2eq_regi("2095",nz_reg2060)=2;
+);
 
 ***rescale
 pm_taxCO2eq_regi(ttot,regi) = sm_DptCO2_2_TDpGtC * pm_taxCO2eq_regi(ttot,regi);
