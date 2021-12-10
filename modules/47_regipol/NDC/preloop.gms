@@ -6,31 +6,24 @@
 *** |  Contact: remind@pik-potsdam.de
 *** SOF ./modules/47_regipol/NDC/preloop.gms
 
-***CB* special case SSA: maximum carbon price (after adjustment below) at 7.5$ in 2020, 30 in 2025, 45 in 2030, to reflect low energy productivity of region, and avoid high losses
-pm_taxCO2eq("2020",regi)$(sameas(regi,"SSA")) = 15 * sm_DptCO2_2_TDpGtC;
-
 *** first calculate tax path until last NDC target year - linear increase
-pm_taxCO2eq(ttot,regi)$(ttot.val gt 2016 AND ttot.val le p47_last_NDC_year(regi)) = pm_taxCO2eq("2020",regi)*(ttot.val-2015)/5;
+pm_taxCO2eq_regi(ttot,regi)$(ttot.val gt 2016 AND ttot.val le p47_last_NDC_year(regi)) = pm_taxCO2eq("2020",regi)*(ttot.val-2015)/5;
 
-*** convergence scheme after the last NDC target year: exponential increase with 1.25% AND regional convergence until p47_taxCO2eq_convergence_year
-p47_taxCO2eq_last_NDC_year(regi) = smax(ttot$(ttot.val = p47_last_NDC_year(regi)), pm_taxCO2eq(ttot,regi));
+*** convergence scheme after the last NDC target year: exponential increase AND regional convergence until p47_taxCO2eq_convergence_year
+*** note that with p47_taxCO2eq_yearly_increase = 1 and p47_taxCO2eq_global2030, the tax decreases linearly to zero in 2100
+p47_taxCO2eq_last_NDC_year(regi) = smax(ttot$(ttot.val = p47_last_NDC_year(regi)), pm_taxCO2eq_regi(ttot,regi));
 
-pm_taxCO2eq(ttot,regi)$(ttot.val gt p47_last_NDC_year(regi))
+pm_taxCO2eq_regi(ttot,regi)$(ttot.val gt p47_last_NDC_year(regi))
    = (  !! regional, weight going from 1 in last NDC target year to 0 in 2100
-        p47_taxCO2eq_last_NDC_year(regi) * 1.0125**(ttot.val-p47_last_NDC_year(regi)) * (max(p47_taxCO2eq_convergence_year,ttot.val) - ttot.val)
+        p47_taxCO2eq_last_NDC_year(regi) * p47_taxCO2eq_yearly_increase**(ttot.val-p47_last_NDC_year(regi)) * (max(p47_taxCO2eq_convergence_year,ttot.val) - ttot.val)
         !! global, weight going from 0 in NDC target year to 1 in and after 2100
-      + p47_taxCO2eq_global2030          * 1.0125**(ttot.val-2030)                    * (min(p47_taxCO2eq_convergence_year,ttot.val) - p47_last_NDC_year(regi))
+      + p47_taxCO2eq_global2030          * p47_taxCO2eq_yearly_increase**(ttot.val-2030)                    * (min(p47_taxCO2eq_convergence_year,ttot.val) - p47_last_NDC_year(regi))
       )/(p47_taxCO2eq_convergence_year - p47_last_NDC_year(regi));
 
-display pm_taxCO2eq;
-
-***as a minimum, have linear price increase starting from 1$ in 2030
-pm_taxCO2eq(ttot,regi)$(ttot.val gt p45_last_NDC_year(regi)) = max(pm_taxCO2eq(ttot,regi),1*sm_DptCO2_2_TDpGtC * (1+(ttot.val-2030)*9/7));
+display pm_taxCO2eq_regi;
 
 *** new 2020 carbon price definition: weighted average of 2015 and 2025, with triple weight for 2015 (which is zero for all non-eu regions).
-pm_taxCO2eq("2020",regi) = (3*pm_taxCO2eq("2015",regi)+pm_taxCO2eq("2025",regi))/4;
-
-display pm_taxCO2eq;
+pm_taxCO2eq_regi("2020",regi) = (3*pm_taxCO2eq_regi("2015",regi)+pm_taxCO2eq_regi("2025",regi))/4;
 
 *#' @equations 
 *#'  calculate level of emission target that it should converge to, composed of:
@@ -40,5 +33,5 @@ p47_ref_co2eq_woLU_regi(p47_NDC_year_set(ttot,regi)) =
           p47_2005share_target(ttot,regi)     * p47_BAU_reg_emi_wo_LU_bunkers("2005",regi) * p47_factor_targetyear(ttot,regi)    !! share with NDC target
         + (1-p47_2005share_target(ttot,regi)) * p47_BAU_reg_emi_wo_LU_bunkers(ttot,regi);            !! baseline for share of countries without NDC target
 
-display pm_taxCO2eq,p47_ref_co2eq_woLU_regi;
+display pm_taxCO2eq_regi,p47_ref_co2eq_woLU_regi;
 *** EOF ./modules/47_regipol/NDC/preloop.gms

@@ -13,6 +13,7 @@ Parameter p47_factorRescaleCO2TaxTrack(iteration,ttot,all_regi)    "Track the ch
 Parameter p47_taxCO2eq_first_NDC_year(all_regi)                    "CO2eq tax in p47_first_NDC_year";
 Parameter p47_taxCO2eq_last_NDC_year(all_regi)                     "CO2eq tax in p47_last_NDC_year";
 Scalar    p47_adjust_exponent                                      "exponent in tax adjustment process";
-
+Scalar    p47_previous_year_in_loop                                "previous year in loop, required for linear interpolation in postsolve";
+Scalar    p47_tax_previous_year_in_loop                            "tax of previous year in loop, required for linear interpolation in postsolve";
 
 *** EOF ./modules/47_regipol/NDC/declarations.gms
