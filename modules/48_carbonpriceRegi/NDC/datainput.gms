@@ -22,7 +22,7 @@ $onlisting
 ;
 
 Parameter p48_factor_targetyear(ttot,all_regi) "Multiplier for target year emissions vs 2005 emissions, as weighted average for all countries with quantifyable emissions under NDC in particular region";
-p48_factor_targetyear(ttot,all_regi) = f47_factor_targetyear(ttot,all_regi,"%cm_NDC_version%","%cm_GDPscen%");
+p48_factor_targetyear(ttot,all_regi) = f48_factor_targetyear(ttot,all_regi,"%cm_NDC_version%","%cm_GDPscen%");
 
 display p48_factor_targetyear;
 
@@ -35,7 +35,7 @@ $onlisting
 ;
 
 Parameter p48_2005share_target(ttot,all_regi) "2005 GHG emission share of countries with quantifyable emissions under NDC in particular region, time dimension specifies alternative future target years";
-p47_2005share_target(ttot,all_regi) = f47_2005share_target(ttot,all_regi,"%cm_NDC_version%","%cm_GDPscen%");
+p48_2005share_target(ttot,all_regi) = f48_2005share_target(ttot,all_regi,"%cm_NDC_version%","%cm_GDPscen%");
 
 display p48_2005share_target;
 
@@ -70,14 +70,14 @@ Parameter p48_best_NDC_coverage(all_regi)         "highest coverage of NDC targe
 Parameter p48_distance_to_optyear(ttot,all_regi)  "distance to p48_use_single_year_close_to to favor years in case of multiple equally good targets";
 Parameter p48_min_distance_to_optyear(all_regi)   "minimal distance to p48_use_single_year_close_to per region";
 
-p48_best_NDC_coverage(regi) = smax(ttot$(ttot.val <= p47_ignore_NDC_after AND ttot.val >= p47_ignore_NDC_before), p48_2005share_target(ttot,regi));
+p48_best_NDC_coverage(regi) = smax(ttot$(ttot.val <= p48_ignore_NDC_after AND ttot.val >= p48_ignore_NDC_before), p48_2005share_target(ttot,regi));
 display p48_best_NDC_coverage;
 
 p48_NDC_year_set(ttot,regi)$(ttot.val <= p48_ignore_NDC_after AND ttot.val >= p48_ignore_NDC_before) = p48_2005share_target(ttot,regi) >= p48_min_ratio_of_coverage_to_max * p48_best_NDC_coverage(regi);
 
 if(p48_use_single_year_close_to > 0,
   p48_distance_to_optyear(p48_NDC_year_set(ttot,regi)) = abs(ttot.val - p48_use_single_year_close_to);
-  p48_min_distance_to_optyear(regi) = smin(ttot$(p47_NDC_year_set(ttot,regi)), p48_distance_to_optyear(ttot,regi));
+  p48_min_distance_to_optyear(regi) = smin(ttot$(p48_NDC_year_set(ttot,regi)), p48_distance_to_optyear(ttot,regi));
   p48_NDC_year_set(ttot,regi) = p48_distance_to_optyear(ttot,regi) = p48_min_distance_to_optyear(regi);
 );
 

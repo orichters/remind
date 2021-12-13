@@ -9,7 +9,7 @@
 Parameter p48_actual_co2eq_woLU_regi(ttot,all_regi)                "actual level of regional 2020/2025/2030 GHG emissions in previous iteration";
 Parameter p48_ref_co2eq_woLU_regi(ttot,all_regi)                   "regional NDC target level of GHG - with different temporal meanings depending on NDC target year";
 Parameter p48_factorRescaleCO2Tax(ttot,all_regi)                   "multiplicative factor to rescale CO2 taxes to achieve the climate targets";
-Parameter p48_factorRescaleCO2TaxTrack(iteration,ttot,all_regi)    "Track the changes of p47_factorRescaleCO2Tax over the iterations";
+Parameter p48_factorRescaleCO2TaxTrack(iteration,ttot,all_regi)    "Track the changes of p48_factorRescaleCO2Tax over the iterations";
 Parameter p48_taxCO2eq_first_NDC_year(all_regi)                    "CO2eq tax in p48_first_NDC_year";
 Parameter p48_taxCO2eq_last_NDC_year(all_regi)                     "CO2eq tax in p48_last_NDC_year";
 Scalar    p48_adjust_exponent                                      "exponent in tax adjustment process";

@@ -6,4 +6,7 @@
 *** |  Contact: remind@pik-potsdam.de
 *** SOF ./modules/48_carbonpriceRegi/none/realization.gms
 
+*####################### R SECTION START (PHASES) ##############################
+*######################## R SECTION END (PHASES) ###############################
+
 *** EOF ./modules/48_carbonpriceRegi/none/realization.gms

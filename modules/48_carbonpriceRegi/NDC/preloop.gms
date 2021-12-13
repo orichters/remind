@@ -18,7 +18,7 @@ pm_taxCO2eq_regi(ttot,regi)$(ttot.val gt p48_last_NDC_year(regi))
         p48_taxCO2eq_last_NDC_year(regi) * p48_taxCO2eq_yearly_increase**(ttot.val-p48_last_NDC_year(regi)) * (max(p48_taxCO2eq_convergence_year,ttot.val) - ttot.val)
         !! global, weight going from 0 in NDC target year to 1 in and after 2100
       + p48_taxCO2eq_global2030          * p48_taxCO2eq_yearly_increase**(ttot.val-2030)                    * (min(p48_taxCO2eq_convergence_year,ttot.val) - p48_last_NDC_year(regi))
-      )/(p48_taxCO2eq_convergence_year - p47_last_NDC_year(regi));
+      )/(p48_taxCO2eq_convergence_year - p48_last_NDC_year(regi));
 
 display pm_taxCO2eq_regi;
 
