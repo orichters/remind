@@ -6,7 +6,7 @@
 *** |  Contact: remind@pik-potsdam.de
 *** SOF ./modules/47_regipol/NDC/postsolve.gms
 
-if(cm_iterative_target_adj eq 10,
+if(ord(iteration)>10, !!start only after 10 iterations, so to already have some stability of the overall carbon price trajectory
 
     display pm_taxCO2eq, pm_taxCO2eq_regi;
 
