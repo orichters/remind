@@ -55,7 +55,7 @@ display p47_hist_share;
 Parameter p47_BAU_reg_emi_wo_LU_bunkers(ttot,all_regi) "regional GHG emissions (without LU and bunkers) in BAU scenario"
   /
 $ondelim
-$include "./modules/47_regipol/NDC/input/p45_BAU_reg_emi_wo_LU_bunkers.cs4r"
+$include "./modules/47_regipol/NDC/input/pm_BAU_reg_emi_wo_LU_bunkers.cs4r"
 $offdelim
   /             ;
 
