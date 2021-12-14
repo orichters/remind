@@ -7,10 +7,9 @@
 *** SOF ./modules/48_carbonpriceRegi/netZero/sets.gms
 
 SETS
-        nz_reg2050(all_regi) "regions with net-zero 2050 ghg target" / "USA","EUR","JPN" /
-        nz_reg2060(all_regi) "regions with net-zero 2060 co2 target" / / 
-***        nz_reg2060(all_regi) "regions with net-zero 2060 co2 target" / "CHA" /
-        nz_reg(all_regi)     "all regions with net-zero target"      / "USA","EUR","JPN","CHA" /
+    nz_reg2050(all_regi) "regions with net-zero 2050 ghg target" / "USA","EUR","JPN" /
+    nz_reg2060(all_regi) "regions with net-zero 2060 co2 target" / "CHA" /
+    nz_reg(all_regi)     "all regions with net-zero target"      / "USA","EUR","JPN","CHA" /
 ;
 
 *** EOF ./modules/48_carbonpriceRegi/netZero/sets.gms

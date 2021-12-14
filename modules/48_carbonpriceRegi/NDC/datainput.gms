@@ -59,6 +59,24 @@ $include "./modules/48_carbonpriceRegi/NDC/input/pm_BAU_reg_emi_wo_LU_bunkers.cs
 $offdelim
   /             ;
 
+*** adjust reduction value for LAM based on the assumption that Brazilian reduction targets are only from landuse, see https://climateactiontracker.org/countries/brazil/
+*** the adjustment were calculated such that Brazil is assumed to maintain its 2015 non-landuse emissions, as follows:
+*** Use R and the code in https://github.com/pik-piam/mrremind/blob/master/R/calcEmiTarget.R to calculate dummy1, ghgTarget, ghgfactor, then run the following code:
+*** countries <- toolGetMapping("regionmappingREMIND.csv",where = "mappingfolder",type = "regional")
+*** LAMCountries <- countries$CountryCode[countries$RegionCode == "LAM"]
+*** shareWithinTargetCountries <- dummy1[LAMCountries,"y2030",] * ghgTarget[LAMCountries,"y2030",] / dimSums(dummy1[LAMCountries,"y2030",] * ghgTarget[LAMCountries,"y2030", ], dim=1)
+*** print(shareWithinTargetCountries["BRA",,]*(as.numeric(ghg["BRA","y2015"])/as.numeric(ghg["BRA","y2005"])-as.numeric(ghgfactor["BRA","y2030","gdp_SSP2"])))
+*** 0.2 is a rounded value valid for all except 2018_uncond, because Brazil had no unconditional target then.
+
+if (not sameas("%cm_NDC_version%","2018_uncond"),
+    p48_factor_targetyear(ttot,regi)$(sameas(regi,"LAM") AND sameas(ttot,"2030")) = p48_factor_targetyear(ttot,regi) + 0.2;
+);
+
+*** add 2060 net zero target for China, not yet in the UNFCCC_NDC database
+p48_factor_targetyear(ttot,regi)$(sameas(regi,"CHA") AND sameas(ttot,"2060")) = 0;
+p48_2005share_target(ttot,regi)$(sameas(regi,"CHA") AND sameas(ttot,"2060")) = 1;
+
+
 *** parameters for selecting NDC years
 Scalar p48_ignore_NDC_before             "NDC targets before this years are ignored, for example to exclude 2030 targets" /2050/;
 Scalar p48_ignore_NDC_after              "NDC targets after  this years are ignored, for example to exclude 2050 net zero targets" /2070/;
@@ -88,18 +106,5 @@ Parameter p48_last_NDC_year(all_regi)  "last year with NDC coverage within regio
 p48_last_NDC_year(regi)  = smax( p48_NDC_year_set(ttot, regi), ttot.val );
 
 display p48_NDC_year_set,p48_first_NDC_year,p48_last_NDC_year;
-
-*** adjust reduction value for LAM based on the assumption that Brazilian reduction targets are only from landuse, see https://climateactiontracker.org/countries/brazil/
-*** the adjustment were calculated such that Brazil is assumed to maintain its 2015 non-landuse emissions, as follows:
-*** Use R and the code in https://github.com/pik-piam/mrremind/blob/master/R/calcEmiTarget.R to calculate dummy1, ghgTarget, ghgfactor, then run the following code:
-*** countries <- toolGetMapping("regionmappingREMIND.csv",where = "mappingfolder",type = "regional")
-*** LAMCountries <- countries$CountryCode[countries$RegionCode == "LAM"]
-*** shareWithinTargetCountries <- dummy1[LAMCountries,"y2030",] * ghgTarget[LAMCountries,"y2030",] / dimSums(dummy1[LAMCountries,"y2030",] * ghgTarget[LAMCountries,"y2030", ], dim=1)
-*** print(shareWithinTargetCountries["BRA",,]*(as.numeric(ghg["BRA","y2015"])/as.numeric(ghg["BRA","y2005"])-as.numeric(ghgfactor["BRA","y2030","gdp_SSP2"])))
-*** 0.2 is a rounded value valid for all except 2018_uncond, because Brazil had no unconditional target then.
-
-if (not sameas("%cm_NDC_version%","2018_uncond"),
-    p48_factor_targetyear(ttot,regi)$(sameas(regi,"LAM") AND sameas(ttot,"2030")) = p48_factor_targetyear(ttot,regi) + 0.2;
-);
 
 *** EOF ./modules/48_carbonpriceRegi/NDC/datainput.gms

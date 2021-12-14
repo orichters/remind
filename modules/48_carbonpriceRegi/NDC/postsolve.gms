@@ -30,14 +30,14 @@ display p48_ref_co2eq_woLU_regi;
 *#' nash compatible convergence scheme: adjustment of co2 tax for next iteration based on deviation of emissions in this iteration (actual) from target emissions (ref)
 *#' maximum possible change between iterations decreases with increase of iteration number
 
-if(       iteration.val lt  8, p48_adjust_exponent = 4;
-   elseif iteration.val lt 15, p48_adjust_exponent = 3;
-   elseif iteration.val lt 23, p48_adjust_exponent = 2;
-   else                        p48_adjust_exponent = 1;
+if(       iteration.val-10 lt  8, p48_adjust_exponent = 4;
+   elseif iteration.val-10 lt 15, p48_adjust_exponent = 3;
+   elseif iteration.val-10 lt 23, p48_adjust_exponent = 2;
+   else                           p48_adjust_exponent = 1;
 );
 
 p48_factorRescaleCO2Tax(p48_NDC_year_set(ttot,regi)) =
-  min((( max(0.1, (p48_actual_co2eq_woLU_regi(ttot,regi)+0.0001)/(p48_ref_co2eq_woLU_regi(ttot,regi)+0.0001) ) )**p48_adjust_exponent),max(2-iteration.val/15,1.01-iteration.val/10000));
+  min((( max(0.1, (p48_actual_co2eq_woLU_regi(ttot,regi)+0.0001)/(p48_ref_co2eq_woLU_regi(ttot,regi)+0.0001) ) )**p48_adjust_exponent),max(2-(iteration.val-10)/15,1.01-(iteration.val-10)/10000));
 *** use max(0.1, ...) to make sure that negative emission values cause no problem, use +0.0001 such that net zero targets cause no problem
 
 pm_taxCO2eq_regi(p48_NDC_year_set(t,regi)) = max(1* sm_DptCO2_2_TDpGtC,pm_taxCO2eq_regi(t,regi) * p48_factorRescaleCO2Tax(t,regi) );
