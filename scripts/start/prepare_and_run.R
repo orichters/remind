@@ -124,22 +124,22 @@ getReportData <- function(path_to_report,inputpath_mag="magpie",inputpath_acc="c
         #if (map[i,]$emirem!="co2luc" &&  map[i,]$emirem!="n2ofertrb") {
         # tmp[tmp<0] <- 0
         #}
-        
-        # Check for negative values, since only "co2luc" is allowed to be 
+
+        # Check for negative values, since only "co2luc" is allowed to be
         # negative. All other emission variables are positive by definition.
         if(map[i,]$emirem != "co2luc"){
           if( !(all(tmp>=0)) ){
             # Hotfix 2021-09-28: Raise warning and set negative values to zero.
             # XXX Todo XXX: Make sure that MAgPIE is not reporting negative N2O
-            # or CH4 emissions and convert this warning into an error that 
+            # or CH4 emissions and convert this warning into an error that
             # breaks the model instead of setting the values to zero.
-            print(paste0("Warning: Negative values detected for '", 
+            print(paste0("Warning: Negative values detected for '",
                          map[i,]$emirem, "' / '", map[i,]$emimag, "'. ",
                          "Hot fix: Set respective values to zero."))
             tmp[tmp < 0] <- 0
           }
         }
-        
+
         # Add emission variable to full dataframe
         out<-mbind(out,tmp)
     }
@@ -200,17 +200,17 @@ prepare <- function() {
     for(i in 1:length(filelist)) {
       if(!is.na(filelist[i])) {
         to <- paste0(destfolder,"/",names(filelist)[i])
-	      if(!file.copy(filelist[i],to=to,recursive=dir.exists(to),overwrite=T))
-	        cat(paste0("Could not copy ",filelist[i]," to ",to,"\n"))
+          if(!file.copy(filelist[i],to=to,recursive=dir.exists(to),overwrite=T))
+            cat(paste0("Could not copy ",filelist[i]," to ",to,"\n"))
       }
-	  }
+      }
   }
 
   # Display git information
   cat("\n===== git info =====\nLatest commit: ")
   cat(try(system("git show -s --format='%h %ci %cn'", intern=TRUE), silent=TRUE),"\nChanges since then: ")
   cat(paste(try(system("git status", intern=TRUE), silent=TRUE),collapse="\n"))
-  
+
   # print version information of installed packages
   cat("\n==== installed package versions =====\n")
   installed.packages() %>%
@@ -221,14 +221,14 @@ prepare <- function() {
     # using right_join instead of filter generates NA for packages that are not
     # installed
     right_join(
-	# list all packages of interest here
+    # list all packages of interest here
         tribble(
             ~Package, "data.table", "devtools", "dplyr", "edgeTrpLib",
             "flexdashboard", "gdx", "gdxdt", "gdxrrw", "ggplot2", "gtools",
             "lucode", "luplot", "luscale", "magclass", "magpie", "methods",
             "mip", "mrremind", "mrvalidation", "optparse", "parallel",
-            "plotly", "remind", "remind2", "rlang", "rmndt", "tidyverse", 
-	    "tools"),
+            "plotly", "remind", "remind2", "rlang", "rmndt", "tidyverse",
+        "tools"),
 
         'Package') %>%
     print(n = Inf)
@@ -265,18 +265,18 @@ prepare <- function() {
 
   # Is the run performed on the cluster?
   on_cluster    <- file.exists('/p')
-  
+
   # Copy MAGICC
-  if ( !file.exists(cfg$magicc_template) 
+  if ( !file.exists(cfg$magicc_template)
      & file.exists(path.expand(Sys.getenv('MAGICC'))))
-	  cfg$magicc_template <- path.expand(Sys.getenv('MAGICC'))
+      cfg$magicc_template <- path.expand(Sys.getenv('MAGICC'))
 
   if (file.exists(cfg$magicc_template)) {
       cat("Copying MAGICC files from",cfg$magicc_template,"to results folder\n")
       system(paste0("cp -rp ",cfg$magicc_template," ",cfg$results_folder))
       system(paste0("cp -rp core/magicc/* ",cfg$results_folder,"/magicc/"))
     } else {
-      cat("Could not copy",cfg$magicc_template,"because it does not exist\n") 
+      cat("Could not copy",cfg$magicc_template,"because it does not exist\n")
     }
 
   # Make sure all MAGICC files have LF line endings, so Fortran won't crash
@@ -383,7 +383,7 @@ prepare <- function() {
       subsets <- c(subsets,list(
         "EU27"=c("ENC","EWN","ECS","ESC","ECE","FRA","DEU","ESW"), #EU27 (without Ireland)
         "NEU_UKI"=c("NES", "NEN", "UKI") #EU27 (without Ireland)
-      ) ) 
+      ) )
     }
     # ext_regi
     content <- c(content, paste('   ext_regi "extended regions list (includes subsets of H12 regions)"'))
@@ -403,7 +403,7 @@ prepare <- function() {
     content <- c(content, '      /')
     content <- c(content, ' ')
     # iso countries set
-	  content <- c(content,'   iso "list of iso countries" /')
+      content <- c(content,'   iso "list of iso countries" /')
     content <- c(content, .tmp(map$CountryCode, suffix1=",", suffix2=" /"),'')
     content <- c(content,'   regi2iso(all_regi,iso) "mapping regions to iso countries"','      /')
     for(i in as.character(unique(map$RegionCode))) {
@@ -429,15 +429,15 @@ prepare <- function() {
   }
   input_new      <- c(paste0("rev",cfg$inputRevision,"_", regionscode(cfg$regionmapping),"_", tolower(cfg$model_name),".tgz"),
                       paste0("CESparametersAndGDX_",cfg$CESandGDXversion,".tgz"))
-  # download and distribute needed data 
+  # download and distribute needed data
   if(!setequal(input_new, input_old) | cfg$force_download) {
       cat("Your input data are outdated or in a different regional resolution. New data are downloaded and distributed. \n")
       download_distribute(files        = input_new,
                           repositories = cfg$repositories, # defined in your local .Rprofile or on the cluster /p/projects/rd3mod/R/.Rprofile
                           modelfolder  = ".",
-                          debug        = FALSE) 
-  } 
-    
+                          debug        = FALSE)
+  }
+
   ############ update information ########################
   # update_info, which regional resolution and input data revision in cfg$model
   update_info(regionscode(cfg$regionmapping),cfg$inputRevision)
@@ -464,11 +464,11 @@ prepare <- function() {
   content <- c(content,'      /',';')
   replace_in_file('core/sets.gms',content,"MODULES",comment="***")
   ### ADD MODULE INFO IN SETS  ############# END #########
-  
+
   # copy right gdx file to the output folder
   gdx_name <- paste0("config/gdx-files/",cfg$gms$cm_CES_configuration,".gdx")
   system(paste0('cp ',gdx_name,' ',file.path(cfg$results_folder, "input.gdx")))
-  
+
   # choose which conopt files to copy
   cfg$files2export$start <- sub("conopt3",cfg$gms$cm_conoptv,cfg$files2export$start)
 
@@ -642,11 +642,11 @@ prepare <- function() {
                                 list(c("q40_CoalBound.M", "!!q40_CoalBound.M")))
     }
 
-    levs_manipulateThis <- c(levs_manipulateThis, 
+    levs_manipulateThis <- c(levs_manipulateThis,
                                list(c("vm_shBioFe.L","!!vm_shBioFe.L")))
-    fixings_manipulateThis <- c(fixings_manipulateThis, 
-                                list(c("vm_shBioFe.FX","!!vm_shBioFe.FX")))   
-    margs_manipulateThis <- c(margs_manipulateThis, 
+    fixings_manipulateThis <- c(fixings_manipulateThis,
+                                list(c("vm_shBioFe.FX","!!vm_shBioFe.FX")))
+    margs_manipulateThis <- c(margs_manipulateThis,
                                 list(c("vm_shBioFe.M", "!!vm_shBioFe.M")))
 
     #RP filter out regipol items
@@ -655,7 +655,7 @@ prepare <- function() {
                                 list(c("q47_implFETax.M", "!!q47_implFETax.M")))
     }
 
-    # Include fixings (levels) and marginals in full.gms at predefined position 
+    # Include fixings (levels) and marginals in full.gms at predefined position
     # in core/loop.gms.
     full_manipulateThis <- c(full_manipulateThis,
                              list(c("cb20150605readinpositionforlevelfile",
@@ -851,32 +851,32 @@ run <- function(start_subsequent_runs = TRUE) {
   setwd(cfg$remind_folder)
 
   #====================== Subsequent runs ===========================
-  
+
   # Use the name to check whether it is a coupled run (TRUE if the name ends with "-rem-xx")
   coupled_run <- grepl("-rem-[0-9]{1,2}$",cfg$title)
   # Don't start subsequent runs form here if REMIND runs coupled. They are started in start_coupled.R instead.
-  start_subsequent_runs <- !coupled_run
- 
+  start_subsequent_runs <- start_subsequent_runs & !coupled_run
+
   if (start_subsequent_runs & (length(cfg$RunsUsingTHISgdxAsInput)[1] != 0)) {
-  
+
     # Save the current cfg settings into a different data object, so that they are not overwritten
     cfg_main <- cfg
-    
+
     # Save the path to the fulldata.gdx of the current run (== cfg_main$title) to the cfg files of the runs that ... (see below at 1., 2., 3.)
     for (run in rownames(cfg_main$RunsUsingTHISgdxAsInput)) {
-       
+
        RData_file <- paste0(run,".RData")
        load(RData_file)
-       
+
        # 1. ... use it as 'input_bau.gdx'
        if (cfg_main$RunsUsingTHISgdxAsInput[run,]$path_gdx_bau == cfg_main$title) {
           cat("Writing the path for input_bau.gdx to ",RData_file,"\n")
           # ...change the path_gdx_bau field of the subsequent run to the fulldata gdx of the current run ...
           cfg$files2export$start['input_bau.gdx'] <- paste0(cfg_main$remind_folder,"/",cfg_main$results_folder,"/fulldata.gdx")
        }
-       
+
        # 2. ... use it as 'input_carbonprice.gdx'
-       if ("path_gdx_carbonprice" %in% names(cfg_main$RunsUsingTHISgdxAsInput)) { 
+       if ("path_gdx_carbonprice" %in% names(cfg_main$RunsUsingTHISgdxAsInput)) {
           if (!is.na(cfg_main$RunsUsingTHISgdxAsInput[run,]$path_gdx_carbonprice)) {
              if (cfg_main$RunsUsingTHISgdxAsInput[run,]$path_gdx_carbonprice == cfg_main$title) {
                 cat("Writing the path for input_carbonprice.gdx to ",RData_file,"\n")
@@ -885,7 +885,7 @@ run <- function(start_subsequent_runs = TRUE) {
              }
           }
        }
-       
+
        save(cfg, file = RData_file)
 
        # 3. ... use it as 'input_ref.gdx' and start these runs (known as subsequent runs).
@@ -902,7 +902,7 @@ run <- function(start_subsequent_runs = TRUE) {
        } else {
           cat('\nNo subsequent run was set for this scenario\n')
        }
-       
+
     }
 
     # Set cfg back to original
@@ -913,7 +913,7 @@ run <- function(start_subsequent_runs = TRUE) {
     # a small message.
 
     subseq_start_file  <- paste0(cfg$results_folder,"/start_subsequentruns_manually.R")
-  
+
     if(!any(cfg$RunsUsingTHISgdxAsInput$path_gdx_ref == cfg$title)) {
       write("cat('\nNo subsequent run was set for this scenario\n')",file=subseq_start_file)
     } else {
@@ -967,7 +967,7 @@ run <- function(start_subsequent_runs = TRUE) {
 #                                    script                                                      #
 ##################################################################################################
 
-# Call prepare() and run() without cfg, because cfg is read from results folder, where it has been 
+# Call prepare() and run() without cfg, because cfg is read from results folder, where it has been
 # copied to by submit(cfg)
 
 if (!file.exists("full.gms")) {
