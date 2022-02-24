@@ -10,7 +10,7 @@ if(sameas("%carbonprice%","none"), p46_startInIteration = 0);
 
 if(ord(iteration) > p46_startInIteration, !!start only after 10 iterations, so to already have some stability of the overall carbon price trajectory
 
-p46_vm_CO2eq_2020(regi)=vm_co2eq.l("2020",regi)*sm_c_2_co2*1000;
+p46_vm_CO2eq_2020(regi) = vm_co2eq.l("2020",regi) * sm_c_2_co2 * 1000;
 
 p46_CO2eq_actual(nz_reg2050) = vm_co2eq.l("2050",nz_reg2050)*sm_c_2_co2*1000 + vm_emiFgas.L("2050",nz_reg2050,"emiFgasTotal")
 ***or*    substract the bunker emissions
@@ -18,6 +18,13 @@ p46_CO2eq_actual(nz_reg2050) = vm_co2eq.l("2050",nz_reg2050)*sm_c_2_co2*1000 + v
         pm_emifac("2050",nz_reg2050,enty,enty2,te,"co2")
         * vm_demFeSector.l("2050",nz_reg2050,enty,enty2,"trans","other") * sm_c_2_co2 * 1000
       ); 
+
+p46_CO2eq_actual(nz_reg2055CO2) = (vm_emiTe.l("2055",nz_regi2055CO2,"co2") + vm_emiMac.L("2055",nz_regi2055CO2,"co2") + vm_emiCdr.L("2055",nz_regi2055CO2,"co2"))*sm_c_2_co2*1000
+***or*    substract the bunker emissions
+    - sum(se2fe(enty,enty2,te),
+        pm_emifac("2055",nz_regi2055CO2,enty,enty2,te,"co2")
+        * vm_demFeSector.l("2055",nz_regi2055CO2,enty,enty2,"trans","other") * sm_c_2_co2 * 1000
+      );
 
 p46_CO2eq_actual(nz_reg2060) = vm_co2eq.l("2060",nz_reg2060)*sm_c_2_co2*1000 + vm_emiFgas.L("2060",nz_reg2060,"emiFgasTotal")
 ***or*    substract the bunker emissions
@@ -48,10 +55,13 @@ p46_taxCO2eqRegiLast(t,regi) = pm_taxCO2eqRegi(t,regi);
 p46_taxCO2eqLast(t,regi) = pm_taxCO2eq(t,regi);
 
 p46_taxCO2eqRegi_iter(iteration,t,nz_reg2050)$sameas(t,"2050") = pm_taxCO2eqRegi(t,nz_reg2050);
+p46_taxCO2eqRegi_iter(iteration,t,nz_reg2055CO2)$sameas(t,"2055") = pm_taxCO2eqRegi(t,nz_reg2055CO2);
 p46_taxCO2eqRegi_iter(iteration,t,nz_reg2060)$sameas(t,"2060") = pm_taxCO2eqRegi(t,nz_reg2060);
 p46_taxCO2eq_iter(iteration,t,nz_reg2050)$sameas(t,"2050") = pm_taxCO2eq(t,nz_reg2050);
+p46_taxCO2eq_iter(iteration,t,nz_reg2055CO2)$sameas(t,"2055") = pm_taxCO2eq(t,nz_reg2055CO2);
 p46_taxCO2eq_iter(iteration,t,nz_reg2060)$sameas(t,"2060") = pm_taxCO2eq(t,nz_reg2060);
 p46_vm_co2eq_iter(iteration,t,nz_reg2050)$sameas(t,"2050") = vm_co2eq.l(t,nz_reg2050);
+p46_vm_co2eq_iter(iteration,t,nz_reg2055CO2)$sameas(t,"2055") = vm_co2eq.l(t,nz_reg2055CO2);
 p46_vm_co2eq_iter(iteration,t,nz_reg2060)$sameas(t,"2060") = vm_co2eq.l(t,nz_reg2060);
 
 *** EOF ./modules/46_carbonpriceRegi/netZero/postsolve.gms

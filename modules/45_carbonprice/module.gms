@@ -23,6 +23,10 @@
 *###################### R SECTION START (MODULETYPES) ##########################
 $Ifi "%carbonprice%" == "NDC" $include "./modules/45_carbonprice/NDC/realization.gms"
 $Ifi "%carbonprice%" == "NDC2constant" $include "./modules/45_carbonprice/NDC2constant/realization.gms"
+$Ifi "%carbonprice%" == "NDC_linreg" $include "./modules/45_carbonprice/NDC_linreg/realization.gms"
+$Ifi "%carbonprice%" == "NDC_linreg2" $include "./modules/45_carbonprice/NDC_linreg2/realization.gms"
+$Ifi "%carbonprice%" == "NDC_linreg3delay" $include "./modules/45_carbonprice/NDC_linreg3delay/realization.gms"
+$Ifi "%carbonprice%" == "NDC_unlimited" $include "./modules/45_carbonprice/NDC_unlimited/realization.gms"
 $Ifi "%carbonprice%" == "NPi2018" $include "./modules/45_carbonprice/NPi2018/realization.gms"
 $Ifi "%carbonprice%" == "diffCurvPhaseIn2Lin" $include "./modules/45_carbonprice/diffCurvPhaseIn2Lin/realization.gms"
 $Ifi "%carbonprice%" == "diffPhaseIn2Constant" $include "./modules/45_carbonprice/diffPhaseIn2Constant/realization.gms"

@@ -4,7 +4,7 @@
 *** |  AGPL-3.0, you are granted additional permissions described in the
 *** |  REMIND License Exception, version 1.0 (see LICENSE file).
 *** |  Contact: remind@pik-potsdam.de
-*** SOF ./modules/45_carbonprice/NDC/declarations.gms
+*** SOF ./modules/45_carbonprice/NDC_linreg3delay/declarations.gms
 
 Parameter
 p45_CO2eqwoLU_actual(ttot,all_regi)                      "actual level of regional GHG emissions after previous iteration"
@@ -16,10 +16,12 @@ p45_factorRescaleCO2TaxLtd_iter(iteration,ttot,all_regi) "Track the changes of p
 p45_taxCO2eqFirstNDCyear(all_regi)                       "CO2eq tax in p45_firstNDCyear"
 p45_taxCO2eqLastNDCyear(all_regi)                        "CO2eq tax in p45_lastNDCyear"
 p45_CO2eqwoLU_actual_iter(iteration,ttot,all_regi)       "actual level of regional GHG emissions p45_CO2eqwoLU_actual tracked over iterations"
-p45_taxCO2eq_iter(iteration,ttot,all_regi)               "CO2eq tax non-regi tracked over iterations"
+p45_taxCO2eqSum_iter(iteration,ttot,all_regi)            "sum of CO2eq tax tracked over iterations"
+p45_emi_av(ttot,all_regi)                                "average emissions for linear regression"
+p45_tax_av(ttot,all_regi)                                "average tax for linear regression"
+p45_linreg_slope(ttot,all_regi)                          "slope of linear regression for tax determination"
 ;
 
 Scalar    p45_adjustExponent                             "exponent in tax adjustment process";
 
-
-*** EOF ./modules/45_carbonprice/NDC/declarations.gms
+*** EOF ./modules/45_carbonprice/NDC_linreg3delay/declarations.gms

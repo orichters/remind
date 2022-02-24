@@ -4,7 +4,7 @@
 *** |  AGPL-3.0, you are granted additional permissions described in the
 *** |  REMIND License Exception, version 1.0 (see LICENSE file).
 *** |  Contact: remind@pik-potsdam.de
-*** SOF ./modules/45_carbonprice/NDC/postsolve.gms
+*** SOF ./modules/45_carbonprice/NDC_unlimited/postsolve.gms
 
 if(cm_iterative_target_adj eq 3,
 
@@ -45,12 +45,12 @@ p45_factorRescaleCO2TaxLtd(p45_NDCyearSet(ttot,regi)) =
   min(max(0.1**p45_adjustExponent, p45_factorRescaleCO2Tax(ttot,regi)), max(2-iteration.val/15,1.01-iteration.val/10000));
 *** use max(0.1, ...) to make sure that negative emission values cause no problem, use +0.0001 such that net zero targets cause no problem
 
-pm_taxCO2eq(t,regi)$(t.val gt 2016 AND t.val ge cm_startyear AND t.val le p45_lastNDCyear(regi)) = max(1* sm_DptCO2_2_TDpGtC,pm_taxCO2eq(t,regi) * p45_factorRescaleCO2TaxLtd(t,regi) );
+pm_taxCO2eq(t,regi)$(t.val gt 2016 AND t.val ge cm_startyear AND t.val le p45_lastNDCyear(regi)) = max(1* sm_DptCO2_2_TDpGtC,pm_taxCO2eq(t,regi) * p45_factorRescaleCO2Tax(t,regi) );
 
 p45_factorRescaleCO2Tax_iter(iteration,ttot,regi) = p45_factorRescaleCO2Tax(ttot,regi);
 p45_factorRescaleCO2TaxLtd_iter(iteration,ttot,regi) = p45_factorRescaleCO2TaxLtd(ttot,regi);
 
-display p45_factorRescaleCO2TaxLtd_iter;
+display p45_factorRescaleCO2Tax_iter;
 
 *CB* special case SSA: maximum carbon price at 7.5$ in 2020, 30 in 2025, 45 in 2030, to reflect low energy productivity of region, and avoid high losses
 pm_taxCO2eq("2020",regi)$(sameas(regi,"SSA")) = min(pm_taxCO2eq("2020",regi)$(sameas(regi,"SSA")),7.5 * sm_DptCO2_2_TDpGtC);
@@ -86,4 +86,4 @@ pm_taxCO2eq("2020",regi) = (3*pm_taxCO2eq("2015",regi)+pm_taxCO2eq("2025",regi))
 
 );
 
-*** EOF ./modules/45_carbonprice/NDC/postsolve.gms
+*** EOF ./modules/45_carbonprice/NDC_unlimited/postsolve.gms

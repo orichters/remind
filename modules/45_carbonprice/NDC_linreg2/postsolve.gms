@@ -4,7 +4,7 @@
 *** |  AGPL-3.0, you are granted additional permissions described in the
 *** |  REMIND License Exception, version 1.0 (see LICENSE file).
 *** |  Contact: remind@pik-potsdam.de
-*** SOF ./modules/45_carbonprice/NDC/postsolve.gms
+*** SOF ./modules/45_carbonprice/NDC_linreg2/postsolve.gms
 
 if(cm_iterative_target_adj eq 3,
 
@@ -22,35 +22,25 @@ p45_CO2eqwoLU_actual(p45_NDCyearSet(ttot,regi)) =
         * vm_demFeSector.l(ttot,regi,enty,enty2,"trans","other") * sm_c_2_co2 * 1000
       ); 
 
-p45_taxCO2eq_iter(iteration,p45_NDCyearSet(t,regi)) = pm_taxCO2eq(t,regi);
+p45_taxCO2eqSum_iter(iteration,p45_NDCyearSet(t,regi)) = pm_taxCO2eqSum(t,regi);
 p45_CO2eqwoLU_actual_iter(iteration,p45_NDCyearSet(t,regi)) = p45_CO2eqwoLU_actual(t,regi);
 
 display vm_co2eq.l;
 display p45_CO2eqwoLU_actual;
 display p45_CO2eqwoLU_goal;
 
-*#' nash compatible convergence scheme: adjustment of co2 tax for next iteration based on deviation of emissions in this iteration (actual) from target emissions (ref)
-*#' maximum possible change between iterations decreases with increase of iteration number
-
-if(       iteration.val lt  8, p45_adjustExponent = 4;
-   elseif iteration.val lt 15, p45_adjustExponent = 3;
-   elseif iteration.val lt 23, p45_adjustExponent = 2;
-   else                        p45_adjustExponent = 1;
+*#' nash compatible convergence scheme: adjustment of co2 tax for next iteration based on linear regression of emissions and taxes
+If (ord(iteration) < 2,
+    pm_taxCO2eq(p45_NDCyearSet(t,regi)) = max(1* sm_DptCO2_2_TDpGtC,pm_taxCO2eq(t,regi) * min((( max(0.1, (p45_CO2eqwoLU_actual(t,regi)+0.0001)/(p45_CO2eqwoLU_goal(t,regi)+0.0001) ) )**4),max(2-iteration.val/15,1.01-iteration.val/10000)) );
+else
+    p45_tax_av(p45_NDCyearSet(t,regi)) = sum(iteration2$(ord(iteration2) le ord(iteration)), ord(iteration2) * p45_taxCO2eqSum_iter(iteration2,t,regi)) * 2 / ord(iteration) / (ord(iteration) + 1);
+    p45_emi_av(p45_NDCyearSet(t,regi)) = sum(iteration2$(ord(iteration2) le ord(iteration)), ord(iteration2) * p45_CO2eqwoLU_actual_iter(iteration2,t,regi)) * 2 / ord(iteration) / (ord(iteration) + 1);
+    p45_linreg_slope(p45_NDCyearSet(t,regi)) = sum(iteration2$(ord(iteration2) le ord(iteration)), ord(iteration2) * (p45_CO2eqwoLU_actual_iter(iteration2,t,regi) - p45_emi_av(t,regi)) * (p45_taxCO2eqSum_iter(iteration2,t,regi) - p45_tax_av(t,regi))) / sum(iteration2$(ord(iteration2) le ord(iteration)), ord(iteration2) * sqr(p45_CO2eqwoLU_actual_iter(iteration2,t,regi) - p45_emi_av(t,regi)));
+    pm_taxCO2eq(p45_NDCyearSet(t,regi)) = 
+      max(0.1* sm_DptCO2_2_TDpGtC,
+          p45_tax_av(t,regi) - p45_linreg_slope(t,regi) * (p45_CO2eqwoLU_goal(t,regi) - p45_emi_av(t,regi) )
+          );
 );
-
-p45_factorRescaleCO2Tax(p45_NDCyearSet(ttot,regi)) =
-  ( (p45_CO2eqwoLU_actual(ttot,regi)+0.0001)/(p45_CO2eqwoLU_goal(ttot,regi)+0.0001) )**p45_adjustExponent;
-
-p45_factorRescaleCO2TaxLtd(p45_NDCyearSet(ttot,regi)) =
-  min(max(0.1**p45_adjustExponent, p45_factorRescaleCO2Tax(ttot,regi)), max(2-iteration.val/15,1.01-iteration.val/10000));
-*** use max(0.1, ...) to make sure that negative emission values cause no problem, use +0.0001 such that net zero targets cause no problem
-
-pm_taxCO2eq(t,regi)$(t.val gt 2016 AND t.val ge cm_startyear AND t.val le p45_lastNDCyear(regi)) = max(1* sm_DptCO2_2_TDpGtC,pm_taxCO2eq(t,regi) * p45_factorRescaleCO2TaxLtd(t,regi) );
-
-p45_factorRescaleCO2Tax_iter(iteration,ttot,regi) = p45_factorRescaleCO2Tax(ttot,regi);
-p45_factorRescaleCO2TaxLtd_iter(iteration,ttot,regi) = p45_factorRescaleCO2TaxLtd(ttot,regi);
-
-display p45_factorRescaleCO2TaxLtd_iter;
 
 *CB* special case SSA: maximum carbon price at 7.5$ in 2020, 30 in 2025, 45 in 2030, to reflect low energy productivity of region, and avoid high losses
 pm_taxCO2eq("2020",regi)$(sameas(regi,"SSA")) = min(pm_taxCO2eq("2020",regi)$(sameas(regi,"SSA")),7.5 * sm_DptCO2_2_TDpGtC);
@@ -86,4 +76,4 @@ pm_taxCO2eq("2020",regi) = (3*pm_taxCO2eq("2015",regi)+pm_taxCO2eq("2025",regi))
 
 );
 
-*** EOF ./modules/45_carbonprice/NDC/postsolve.gms
+*** EOF ./modules/45_carbonprice/NDC_linreg2/postsolve.gms
