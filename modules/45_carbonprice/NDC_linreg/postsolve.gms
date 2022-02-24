@@ -38,7 +38,7 @@ else
     p45_linreg_slope(p45_NDCyearSet(t,regi)) = sum(iteration2$(ord(iteration2) le ord(iteration)), (p45_CO2eqwoLU_actual_iter(iteration2,t,regi) - p45_emi_av(t,regi)) * (p45_taxCO2eqSum_iter(iteration2,t,regi) - p45_tax_av(t,regi))) / sum(iteration2$(ord(iteration2) le ord(iteration)), sqr(p45_CO2eqwoLU_actual_iter(iteration2,t,regi) - p45_emi_av(t,regi)));
     pm_taxCO2eq(p45_NDCyearSet(t,regi)) = 
       max(0.1* sm_DptCO2_2_TDpGtC,
-          p45_tax_av(t,regi) - p45_linreg_slope(t,regi) * (p45_CO2eqwoLU_goal(t,regi) - p45_emi_av(t,regi) )
+          p45_tax_av(t,regi) + p45_linreg_slope(t,regi) * (p45_CO2eqwoLU_goal(t,regi) - p45_emi_av(t,regi) )
           );
 );
 
