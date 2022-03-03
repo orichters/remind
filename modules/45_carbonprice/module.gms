@@ -26,6 +26,7 @@ $Ifi "%carbonprice%" == "NDC2constant" $include "./modules/45_carbonprice/NDC2co
 $Ifi "%carbonprice%" == "NDC_linreg" $include "./modules/45_carbonprice/NDC_linreg/realization.gms"
 $Ifi "%carbonprice%" == "NDC_linreg2" $include "./modules/45_carbonprice/NDC_linreg2/realization.gms"
 $Ifi "%carbonprice%" == "NDC_linreg3delay" $include "./modules/45_carbonprice/NDC_linreg3delay/realization.gms"
+$Ifi "%carbonprice%" == "NDC_linreg4onlylast" $include "./modules/45_carbonprice/NDC_linreg4onlylast/realization.gms"
 $Ifi "%carbonprice%" == "NDC_unlimited" $include "./modules/45_carbonprice/NDC_unlimited/realization.gms"
 $Ifi "%carbonprice%" == "NPi2018" $include "./modules/45_carbonprice/NPi2018/realization.gms"
 $Ifi "%carbonprice%" == "diffCurvPhaseIn2Lin" $include "./modules/45_carbonprice/diffCurvPhaseIn2Lin/realization.gms"
