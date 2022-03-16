@@ -6,6 +6,9 @@
 *** |  Contact: remind@pik-potsdam.de
 *** SOF ./modules/01_macro/singleSectorGr/preloop.gms
 
+
+if(    (cm_dtscen = 0) or (cm_dtscen = 10),
+
 *** Calculate cumulative depreciation factors. old version
 *** differentiates even and uneven time steps
 *** has a wrong shift in my opinion. The 1/2 parts should be for even, not for uneven
@@ -45,14 +48,16 @@ pm_cumDeprecFactor_new(t,regi,in)$(ppfKap(in) OR in_putty(in))
 
 );
 );
-display "test Deprec old", pm_cumDeprecFactor_new,pm_cumDeprecFactor_old;
+display "test Deprec old cm_dtscen = 0", pm_cumDeprecFactor_new,pm_cumDeprecFactor_old;
 
 
+elseif (cm_dtscen = 1) or (cm_dtscen = 11),
 
 *** Calculate cumulative depreciation factors. first new version
 *** differentiates even and uneven time timesteps
 *** corrected the 1/2 parts
 *** h_ndc_bIT_2022-02-24_18.47.09
+
 
 loop ((t,counter),
 if ( pm_dt(t) eq 2 * counter.val,
@@ -88,7 +93,11 @@ pm_cumDeprecFactor_new(t,regi,in)$(ppfKap(in) OR in_putty(in))
 
 );
 );
-display "test Deprec first new, 1/2 shifted to even", pm_cumDeprecFactor_new,pm_cumDeprecFactor_old;
+display "test Deprec first new, 1/2 shifted to even, cm_dtscen = 1", pm_cumDeprecFactor_new,pm_cumDeprecFactor_old;
+
+
+
+elseif (cm_dtscen = 2) or (cm_dtscen = 12),
 
 
 
@@ -111,12 +120,10 @@ pm_cumDeprecFactor_new(t,regi,in)$(ppfKap(in) OR in_putty(in))
     /(sqr(pm_delta_kap(regi,in)) * pm_dt(t));
 
 );
-display "test Deprec first new, 1/2 shifted to even", pm_cumDeprecFactor_new,pm_cumDeprecFactor_old;
+display "test Deprec first new, 1/2 shifted to even, cm_dtscen = 2", pm_cumDeprecFactor_new,pm_cumDeprecFactor_old;
 
 
+);
 
-
-
-display "test Deprec", pm_cumDeprecFactor_new,pm_cumDeprecFactor_old;
 
 *** EOF ./modules/01_macro/singleSectorGr/preloop.gms

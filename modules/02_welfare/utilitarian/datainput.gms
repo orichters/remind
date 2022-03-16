@@ -9,6 +9,15 @@
 pm_welf(ttot)$(ttot.val ge 2005) = 1;
 $if %cm_less_TS% == "on"  pm_welf("2060") = 0.9;
 
+if( cm_dtscen < 10,
+pm_welf_oli(ttot,regi) = pm_welf(ttot) * pm_ts(ttot);
+);
+if( cm_dtscen ge 10,
+pm_welf_oli(ttot,regi)$(ord(ttot) < card(ttot)) =  1     +     ((1/(1 - pm_prtp(regi) ))**pm_dt(ttot) - pm_prtp(regi) * ((1/(1 - pm_prtp(regi) ))**pm_dt(ttot) + pm_dt(ttot) - 1) - 1)/(sqr( pm_prtp(regi) ) * pm_dt(ttot) )     -     ((pm_prtp(regi) - 1) * ((1 - pm_prtp(regi) )**pm_dt(ttot+1) + pm_prtp(regi) * pm_dt(ttot+1) - 1))/(sqr( pm_prtp(regi) ) * pm_dt(ttot+1) );
+pm_welf_oli(ttot,regi)$(ord(ttot) eq card(ttot)) =  1     +     ((1/(1 - pm_prtp(regi) ))**pm_dt(ttot) - pm_prtp(regi) * ((1/(1 - pm_prtp(regi) ))**pm_dt(ttot) + pm_dt(ttot) - 1) - 1)/(sqr( pm_prtp(regi) ) * pm_dt(ttot) );
+*** missing: after card(ttot), thus 2150
+);
+
 *RP* 2012-03-06: Inconvenience costs on seprod
 $IFTHEN.INCONV %cm_INCONV_PENALTY% == "on"
 p02_inconvpen_lap(ttot,regi,"coaltr")$(ttot.val ge 2005)      = 0.5;   !! In dollar per GJ seprod at 1.000$/cap GDP, or 10$/GJ at 10.000$_GDP/cap

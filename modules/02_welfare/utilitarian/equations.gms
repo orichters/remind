@@ -21,11 +21,12 @@ q02_welfareGlob..
 *' summing over all time steps taking into account the pure time preference rate.
 *' Assuming an intertemporal elasticity of substitution of 1, it holds:
 ***---------------------------------------------------------------------------
+
 q02_welfare(regi)..
     v02_welfare(regi) 
   =e=
     sum(ttot $(ttot.val ge 2005),
-        pm_welf(ttot) * pm_ts(ttot) * (1 / ( (1 + pm_prtp(regi))**(pm_ttot_val(ttot)-2005) ) )
+        pm_welf_oli(ttot,regi) * (1 / ( (1 + pm_prtp(regi))**(pm_ttot_val(ttot)-2005) ) )
         *   (  (pm_pop(ttot,regi) 
                 *   (
                         ((( (vm_cons(ttot,regi)*(1-cm_damage*vm_forcOs(ttot)*vm_forcOs(ttot)))/pm_pop(ttot,regi))**(1-1/pm_ies(regi))-1)/(1-1/pm_ies(regi)) )$(pm_ies(regi) ne 1)
