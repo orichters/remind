@@ -12,11 +12,15 @@ $if %cm_less_TS% == "on"  pm_welf("2060") = 0.9;
 if( cm_dtscen < 10,
 pm_welf_oli(ttot,regi) = pm_welf(ttot) * pm_ts(ttot);
 );
-if( cm_dtscen ge 10,
+if( cm_dtscen ge 10 AND cm_dtscen < 20,
 pm_welf_oli(ttot,regi)$(ord(ttot) < card(ttot)) =  1     +     ((1/(1 - pm_prtp(regi) ))**pm_dt(ttot) - pm_prtp(regi) * ((1/(1 - pm_prtp(regi) ))**pm_dt(ttot) + pm_dt(ttot) - 1) - 1)/(sqr( pm_prtp(regi) ) * pm_dt(ttot) )     -     ((pm_prtp(regi) - 1) * ((1 - pm_prtp(regi) )**pm_dt(ttot+1) + pm_prtp(regi) * pm_dt(ttot+1) - 1))/(sqr( pm_prtp(regi) ) * pm_dt(ttot+1) );
-pm_welf_oli(ttot,regi)$(ord(ttot) eq card(ttot)) =  1     +     ((1/(1 - pm_prtp(regi) ))**pm_dt(ttot) - pm_prtp(regi) * ((1/(1 - pm_prtp(regi) ))**pm_dt(ttot) + pm_dt(ttot) - 1) - 1)/(sqr( pm_prtp(regi) ) * pm_dt(ttot) );
-*** missing: after card(ttot), thus 2150
+pm_welf_oli(ttot,regi)$(ord(ttot) eq card(ttot)) =  pm_ts(ttot);
+*** not completely precise
 );
+if( cm_dtscen ge 20,
+pm_welf_oli(ttot,regi) = pm_ts(ttot);
+);
+
 
 *RP* 2012-03-06: Inconvenience costs on seprod
 $IFTHEN.INCONV %cm_INCONV_PENALTY% == "on"

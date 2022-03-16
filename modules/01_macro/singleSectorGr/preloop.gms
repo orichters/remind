@@ -7,7 +7,7 @@
 *** SOF ./modules/01_macro/singleSectorGr/preloop.gms
 
 
-if(    (cm_dtscen = 0) or (cm_dtscen = 10),
+if(    (cm_dtscen = 0) or (cm_dtscen = 10) or (cm_dtscen = 20),
 
 *** Calculate cumulative depreciation factors. old version
 *** differentiates even and uneven time steps
@@ -51,7 +51,7 @@ pm_cumDeprecFactor_new(t,regi,in)$(ppfKap(in) OR in_putty(in))
 display "test Deprec old cm_dtscen = 0", pm_cumDeprecFactor_new,pm_cumDeprecFactor_old;
 
 
-elseif (cm_dtscen = 1) or (cm_dtscen = 11),
+elseif (cm_dtscen = 1) or (cm_dtscen = 11) or (cm_dtscen = 21),
 
 *** Calculate cumulative depreciation factors. first new version
 *** differentiates even and uneven time timesteps
@@ -93,14 +93,12 @@ pm_cumDeprecFactor_new(t,regi,in)$(ppfKap(in) OR in_putty(in))
 
 );
 );
+
 display "test Deprec first new, 1/2 shifted to even, cm_dtscen = 1", pm_cumDeprecFactor_new,pm_cumDeprecFactor_old;
 
 
 
-elseif (cm_dtscen = 2) or (cm_dtscen = 12),
-
-
-
+elseif (cm_dtscen = 2) or (cm_dtscen = 12) or (cm_dtscen = 22),
 
 *** Calculate cumulative depreciation factors. second new version
 *** makes a linear regression between old and new investment
