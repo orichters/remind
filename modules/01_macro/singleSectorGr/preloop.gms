@@ -7,7 +7,7 @@
 *** SOF ./modules/01_macro/singleSectorGr/preloop.gms
 
 
-if(    (cm_dtscen = 0) or (cm_dtscen = 10) or (cm_dtscen = 20),
+if(    (cm_dtscen = 0) or (cm_dtscen = 10) or (cm_dtscen = 20) or (cm_dtscen = 30),
 
 *** Calculate cumulative depreciation factors. old version
 *** differentiates even and uneven time steps
@@ -51,7 +51,7 @@ pm_cumDeprecFactor_new(t,regi,in)$(ppfKap(in) OR in_putty(in))
 display "test Deprec old cm_dtscen = 0", pm_cumDeprecFactor_new,pm_cumDeprecFactor_old;
 
 
-elseif (cm_dtscen = 1) or (cm_dtscen = 11) or (cm_dtscen = 21),
+elseif (cm_dtscen = 1) or (cm_dtscen = 11) or (cm_dtscen = 21) or (cm_dtscen = 31),
 
 *** Calculate cumulative depreciation factors. first new version
 *** differentiates even and uneven time timesteps
@@ -98,13 +98,14 @@ display "test Deprec first new, 1/2 shifted to even, cm_dtscen = 1", pm_cumDepre
 
 
 
-elseif (cm_dtscen = 2) or (cm_dtscen = 12) or (cm_dtscen = 22),
+elseif (cm_dtscen = 2) or (cm_dtscen = 12) or (cm_dtscen = 22) or (cm_dtscen = 32),
 
 *** Calculate cumulative depreciation factors. second new version
 *** makes a linear regression between old and new investment
+*** use only new in actual year
 *** CODE for wolfram alpha with A: old, N: new, t: time, n: time steps, d: depreciation
 *** Sum[t/n * N * Power[(1-d),(n-t)]+(n-t)/n * A * Power[(1-d),(n-t)] ,{t,1,n}]
-*** = (A ((1 - d)^n + d (-(1 - d)^n + n + 1) - 1) - B (-d (1 - d)^n + d n (1 - d)^n + (1 - d)^n + d - 1))/(d^2 n)
+*** = (A ((1 - d)^n + d (-(1 - d)^n + n + 1) - 1) - N (-d (1 - d)^n + d n (1 - d)^n + (1 - d)^n + d - 1))/(d^2 n)
 *** h_ndc_bIT_2022-02-28
 
 loop ((t,counter),
@@ -118,7 +119,32 @@ pm_cumDeprecFactor_new(t,regi,in)$(ppfKap(in) OR in_putty(in))
     /(sqr(pm_delta_kap(regi,in)) * pm_dt(t));
 
 );
-display "test Deprec first new, 1/2 shifted to even, cm_dtscen = 2", pm_cumDeprecFactor_new,pm_cumDeprecFactor_old;
+display "test Deprec second new, linear interpolated investment rule, cm_dtscen = 2", pm_cumDeprecFactor_new,pm_cumDeprecFactor_old;
+
+
+
+
+elseif (cm_dtscen = 3) or (cm_dtscen = 13) or (cm_dtscen = 23) or (cm_dtscen = 33),
+
+*** Calculate cumulative depreciation factors. second new version
+*** makes a linear regression between old and new investment
+*** use 0.5 new + 0.5 * (1-d) old in actual year
+*** CODE for wolfram alpha with A: old, N: new, t: time, n: time steps, d: depreciation
+*** Sum[0.5 * (t/n * N * Power[(1-d),(n-t)]+(n-t)/n * A * Power[(1-d),(n-t)] ) + 0.5 * ((t-1)/n * N * Power[(1-d),(n-t+1)]+(n-t+1)/n * A * Power[(1-d),(n-t+1)] ),{t,1,n}]
+*** prefactor A: (2 - 2 (1 - d)^n + (1 - d)^n d^2 n - 2 d (1 - (1 - d)^n + (1 - d)^n n))/(2 d^2 n)
+***              = ((d ((d - 2) n + 2) - 2) (1 - d)^n - 2 d + 2)/(2 d^2 n)
+*** prefactor N: - (2 - 2 (1 - d)^n + 2 d (-1 + (1 - d)^n - n) + d^2 n)/(2 d^2 n)
+***              = (2 (1 - d)^(n+1) + 2 d (1 + n) - d^2 n - 2)/(2 d^2 n)
+*** further simplified with wolfram alpha
+
+pm_cumDeprecFactor_old(t,regi,in)$(ppfKap(in) OR in_putty(in))
+  = ((pm_delta_kap(regi,in) * ((pm_delta_kap(regi,in) - 2) * pm_dt(t) + 2) - 2) * (1 - pm_delta_kap(regi,in))**pm_dt(t) - 2 * pm_delta_kap(regi,in) + 2)/(2 * sqr(pm_delta_kap(regi,in)) * pm_dt(t));
+
+pm_cumDeprecFactor_new(t,regi,in)$(ppfKap(in) OR in_putty(in))
+  = (2 * (1 - pm_delta_kap(regi,in))**(pm_dt(t) + 1) + 2 * pm_delta_kap(regi,in) * (1 + pm_dt(t)) - sqr(pm_delta_kap(regi,in)) * pm_dt(t) - 2)
+    /(2 * sqr(pm_delta_kap(regi,in)) * pm_dt(t));
+
+display "test Deprec third new, linear interpolated investment rule, cm_dtscen = 2", pm_cumDeprecFactor_new,pm_cumDeprecFactor_old;
 
 
 );

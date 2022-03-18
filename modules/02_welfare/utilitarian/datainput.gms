@@ -6,19 +6,41 @@
 *** |  Contact: remind@pik-potsdam.de
 *** SOF ./modules/02_welfare/utilitarian/datainput.gms
 
+*** standard procedure, artificially reducing utility in 2060 to reduce jumps
 pm_welf(ttot)$(ttot.val ge 2005) = 1;
 $if %cm_less_TS% == "on"  pm_welf("2060") = 0.9;
 
 if( cm_dtscen < 10,
 pm_welf_oli(ttot,regi) = pm_welf(ttot) * pm_ts(ttot);
 );
+
+*** intertemporal optimization within time step, but with wrong discounting (1-d) instead of 1/(1+d)
+*** using Wolfram Alpha with n = pm_dt(ttot), N = pm_dt(ttot+1), p = pm_prtp(regi)
+*** Sum[ t/n * (1/(1-p))**(n-t) ,{t,1,n}]  =  ((p - 1) (n p + 1 - (1/(1 - p))^n))/(n p^2)
+*** Sum[ (N-t)/N * (1-p)**t ,{t,1,N}]      = -((p - 1) ((1 - p)^N + N p - 1))/(N p^2)
 if( cm_dtscen ge 10 AND cm_dtscen < 20,
-pm_welf_oli(ttot,regi)$(ttot.val ge 2005 AND ord(ttot) < card(ttot)) =  1     +     ((1/(1 - pm_prtp(regi) ))**pm_dt(ttot) - pm_prtp(regi) * ((1/(1 - pm_prtp(regi) ))**pm_dt(ttot) + pm_dt(ttot) - 1) - 1)/(sqr( pm_prtp(regi) ) * pm_dt(ttot) )     -     ((pm_prtp(regi) - 1) * ((1 - pm_prtp(regi) )**pm_dt(ttot+1) + pm_prtp(regi) * pm_dt(ttot+1) - 1))/(sqr( pm_prtp(regi) ) * pm_dt(ttot+1) );
+pm_welf_oli(ttot,regi)$(ttot.val ge 2005 AND ord(ttot) < card(ttot)) = 
+  (pm_prtp(regi) - 1) * (pm_dt(ttot)   * pm_prtp(regi) + 1 - (1/(1 - pm_prtp(regi)))**pm_dt(ttot)) / (sqr( pm_prtp(regi) ) * pm_dt(ttot  ) )
+- (pm_prtp(regi) - 1) * (pm_dt(ttot+1) * pm_prtp(regi) - 1 + (1 - pm_prtp(regi) )**pm_dt(ttot+1) ) / (sqr( pm_prtp(regi) ) * pm_dt(ttot+1) );
 pm_welf_oli(ttot,regi)$(ttot.val ge 2005 AND ord(ttot) eq card(ttot)) =  pm_ts(ttot);
-*** not completely precise
+*** not completely precise for the last time step
 );
-if( cm_dtscen ge 20,
+
+*** standard procedure without the jump reduction
+if( cm_dtscen ge 20 AND cm_dtscen < 30,
 pm_welf_oli(ttot,regi)$(ttot.val ge 2005) = pm_ts(ttot);
+);
+
+*** intertemporal optimization within time step with correct discounting 1/(1+d)
+*** using Wolfram Alpha with n = pm_dt(ttot), N = pm_dt(ttot+1), p = pm_prtp(regi)
+*** Sum[t/n * (1+p)**(n-t) ,{t,1,n-1}]   = -(p + 1) (n p + 1 -(p + 1)^n)/(n p^2)
+*** Sum[(N-t)/N * (1/(1+p))**t ,{t,0,N}] =  (p + 1) (N p - 1 + (1/(p + 1))^N)/(N p^2)
+if( cm_dtscen ge 30 AND cm_dtscen < 40,
+pm_welf_oli(ttot,regi)$(ttot.val ge 2005 AND ord(ttot) < card(ttot)) = 
+  - (pm_prtp(regi) + 1) * (pm_dt(ttot)   * pm_prtp(regi) + 1 - (pm_prtp(regi) + 1)**pm_dt(ttot)      ) / (sqr( pm_prtp(regi) ) * pm_dt(ttot  ) )
+  + (pm_prtp(regi) + 1) * (pm_dt(ttot+1) * pm_prtp(regi) - 1 + (1/(1 + pm_prtp(regi)))**pm_dt(ttot+1)) / (sqr( pm_prtp(regi) ) * pm_dt(ttot+1) );
+pm_welf_oli(ttot,regi)$(ttot.val ge 2005 AND ord(ttot) eq card(ttot)) =  pm_ts(ttot);
+*** not completely precise for the last time step
 );
 
 

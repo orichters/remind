@@ -140,8 +140,8 @@ option profile = 0;
 
 
 ***---------------------    Run name and description    -------------------------
-$setGlobal c_expname  default
-$setGlobal c_description  REMIND run with default settings
+$setGlobal c_expname  SSP2-Base_inv0_welf3_1iter
+$setGlobal c_description  Normal investment, welfare based on true discounting with corrected 1/(1+d) factor
 
 ***------------------------------------------------------------------------------
 ***                           MODULES
@@ -353,12 +353,12 @@ cm_dtscen                    "switch for investment and welfare scenario between
 ***                           YOU ARE IN THE WARNING ZONE (DON'T DO CHANGES HERE)
 *** --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-cm_dtscen = 0; !! def = 0
+cm_dtscen = 30; !! def = 0
 
 cm_iteration_max       = 1;     !! def = 1
 c_solver_try_max       = 2;     !! def = 2
 c_keep_iteration_gdxes = 0;     !! def = 0
-cm_nash_autoconverge   = 1;     !! def = 1
+cm_nash_autoconverge   = 0;     !! def = 1
 $setglobal cm_MAgPIE_coupling  off     !! def = "off"
 
 cm_emiscen        = 1;         !! def = 1
