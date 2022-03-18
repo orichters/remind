@@ -13,12 +13,12 @@ if( cm_dtscen < 10,
 pm_welf_oli(ttot,regi) = pm_welf(ttot) * pm_ts(ttot);
 );
 if( cm_dtscen ge 10 AND cm_dtscen < 20,
-pm_welf_oli(ttot,regi)$(ord(ttot) < card(ttot)) =  1     +     ((1/(1 - pm_prtp(regi) ))**pm_dt(ttot) - pm_prtp(regi) * ((1/(1 - pm_prtp(regi) ))**pm_dt(ttot) + pm_dt(ttot) - 1) - 1)/(sqr( pm_prtp(regi) ) * pm_dt(ttot) )     -     ((pm_prtp(regi) - 1) * ((1 - pm_prtp(regi) )**pm_dt(ttot+1) + pm_prtp(regi) * pm_dt(ttot+1) - 1))/(sqr( pm_prtp(regi) ) * pm_dt(ttot+1) );
-pm_welf_oli(ttot,regi)$(ord(ttot) eq card(ttot)) =  pm_ts(ttot);
+pm_welf_oli(ttot,regi)$(ttot.val ge 2005 AND ord(ttot) < card(ttot)) =  1     +     ((1/(1 - pm_prtp(regi) ))**pm_dt(ttot) - pm_prtp(regi) * ((1/(1 - pm_prtp(regi) ))**pm_dt(ttot) + pm_dt(ttot) - 1) - 1)/(sqr( pm_prtp(regi) ) * pm_dt(ttot) )     -     ((pm_prtp(regi) - 1) * ((1 - pm_prtp(regi) )**pm_dt(ttot+1) + pm_prtp(regi) * pm_dt(ttot+1) - 1))/(sqr( pm_prtp(regi) ) * pm_dt(ttot+1) );
+pm_welf_oli(ttot,regi)$(ttot.val ge 2005 AND ord(ttot) eq card(ttot)) =  pm_ts(ttot);
 *** not completely precise
 );
 if( cm_dtscen ge 20,
-pm_welf_oli(ttot,regi) = pm_ts(ttot);
+pm_welf_oli(ttot,regi)$(ttot.val ge 2005) = pm_ts(ttot);
 );
 
 
