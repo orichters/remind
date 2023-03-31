@@ -19,6 +19,7 @@ $ifthen.cm_netZeroScen "%cm_netZeroScen%" == "ENGAGE4p5_GlP"
   *** p46_offset(nz_reg)$(sameas(nz_reg, "SSA")) = 2000;
 $elseif.cm_netZeroScen "%cm_netZeroScen%" == "NGFS_v4_20pc"
   p46_offset(nz_reg) = 0.2 * vm_co2eq.l("2020", nz_reg) * sm_c_2_co2 * 1000;
+  p46_offset(nz_reg)$(sameas(nz_reg, "LAM")) = 0.6 * vm_co2eq.l("2020", nz_reg) * sm_c_2_co2 * 1000;
   display p46_offset;
 $endif.cm_netZeroScen
 
