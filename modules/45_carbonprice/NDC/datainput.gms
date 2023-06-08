@@ -7,12 +7,40 @@
 *** SOF ./modules/45_carbonprice/NDC/datainput.gms
 
 *** CO2 tax level is calculated at a 5% exponential increase from the 2020 tax level exogenously defined until 2030, then a linear tax, plus regional convergence
-*** convert tax value from $/t CO2eq to T$/GtC
-pm_taxCO2eq(t,regi)$(sameas(t, "2020")) = 5 * sm_DptCO2_2_TDpGtC;
 
-*** set ETS price in 2015 for EUR
-pm_taxCO2eq(t,regi)$(sameas(t, "2015")) = 0;
+*** sm_DptCO2_2_TDpGtC converts tax value from $/t CO2eq to T$/GtC
+
+*** set ETS price in 2010 and 2015 for EUR, NEU
+pm_taxCO2eq(t,regi)$(sameas(t, "2010") and regi_group("EUR_regi",regi)) = 10 * sm_DptCO2_2_TDpGtC;
+pm_taxCO2eq(t,regi)$(sameas(t, "2010") and regi_group("NEU_regi",regi)) = 2.5 * sm_DptCO2_2_TDpGtC;
+
+pm_taxCO2eq(t,regi)$(sameas(t, "2015") and regi_group("EUR_regi",regi)) = 10 * sm_DptCO2_2_TDpGtC;
 pm_taxCO2eq(t,regi)$(sameas(t, "2015") and regi_group("EUR_regi",regi)) = 5 * sm_DptCO2_2_TDpGtC;
+
+pm_taxCO2eq("2020",regi)$sameas(regi,"EUR") = 50;
+pm_taxCO2eq("2020",regi)$sameas(regi,"DEU") = 50;
+pm_taxCO2eq("2020",regi)$sameas(regi,"ECE") = 50;
+pm_taxCO2eq("2020",regi)$sameas(regi,"ECS") = 50;
+pm_taxCO2eq("2020",regi)$sameas(regi,"ENC") = 50;
+pm_taxCO2eq("2020",regi)$sameas(regi,"ESC") = 50;
+pm_taxCO2eq("2020",regi)$sameas(regi,"ESW") = 50;
+pm_taxCO2eq("2020",regi)$sameas(regi,"EWN") = 50;
+pm_taxCO2eq("2020",regi)$sameas(regi,"FRA") = 50;
+pm_taxCO2eq("2020",regi)$sameas(regi,"UKI") = 50;
+pm_taxCO2eq("2020",regi)$sameas(regi,"NEU") = 10;
+pm_taxCO2eq("2020",regi)$sameas(regi,"NEN") = 10;
+pm_taxCO2eq("2020",regi)$sameas(regi,"NES") = 10;
+
+pm_taxCO2eq("2020",regi)$sameas(regi,"CAZ") = 20;
+pm_taxCO2eq("2020",regi)$sameas(regi,"CHA") = 5;
+pm_taxCO2eq("2020",regi)$sameas(regi,"IND") = 1;
+pm_taxCO2eq("2020",regi)$sameas(regi,"JPN") = 15;
+pm_taxCO2eq("2020",regi)$sameas(regi,"LAM") = 10;
+pm_taxCO2eq("2020",regi)$sameas(regi,"MEA") = 2.5;
+pm_taxCO2eq("2020",regi)$sameas(regi,"OAS") = 5;
+pm_taxCO2eq("2020",regi)$sameas(regi,"REF") = 2.5;
+pm_taxCO2eq("2020",regi)$sameas(regi,"SSA") = 1;
+pm_taxCO2eq("2020",regi)$sameas(regi,"USA") = 20;
 
 *** parameters for exponential increase after NDC targets
 Scalar p45_taxCO2eqGlobal2030 "startprice in 2030 (unit TDpGtC) of global CO2eq taxes towards which countries converge";
@@ -79,7 +107,7 @@ $offdelim
   /             ;
 
 *** parameters for selecting NDC years
-Scalar p45_ignoreNDCbefore          "NDC targets before this years are ignored, for example to exclude 2030 targets" /2020/;
+Scalar p45_ignoreNDCbefore          "NDC targets before this years are ignored, for example to exclude 2030 targets" /2023/;
 p45_ignoreNDCbefore = max(p45_ignoreNDCbefore, cm_startyear)
 Scalar p45_ignoreNDCafter           "NDC targets after  this years are ignored, for example to exclude 2050 net zero targets" /2030/;
 Scalar p45_minRatioOfCoverageToMax  "only targets whose coverage is this times p45_bestNDCcoverage are considered. Use 1 for only best." /1.0/;

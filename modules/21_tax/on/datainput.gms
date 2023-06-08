@@ -158,7 +158,8 @@ f21_taxCO2eqHist("2020",regi) = 0;
 f21_taxCO2eqHist("2020",regi)$(regi_group("EUR_regi",regi)) =  20;
 
 *** convert from $/tCO2 to T$/GtC
-pm_taxCO2eqHist(t,regi) = f21_taxCO2eqHist(t,regi) * sm_DptCO2_2_TDpGtC;
+pm_taxCO2eqHist(t,regi) = 0;
+** was: f21_taxCO2eqHist(t,regi) * sm_DptCO2_2_TDpGtC;
 
 *JeS for SO2 tax case: tax path in 10^12$/TgS (= 10^6 $/t S) @ GDP/cap of 1000$/cap  (value gets scaled by GDP/cap)
 if((cm_so2tax_scen eq 0),
