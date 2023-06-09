@@ -15,7 +15,7 @@ pm_taxCO2eq(t,regi)$(sameas(t, "2010") and regi_group("EUR_regi",regi)) = 10 * s
 pm_taxCO2eq(t,regi)$(sameas(t, "2010") and regi_group("NEU_regi",regi)) = 2.5 * sm_DptCO2_2_TDpGtC;
 
 pm_taxCO2eq(t,regi)$(sameas(t, "2015") and regi_group("EUR_regi",regi)) = 10 * sm_DptCO2_2_TDpGtC;
-pm_taxCO2eq(t,regi)$(sameas(t, "2015") and regi_group("EUR_regi",regi)) = 5 * sm_DptCO2_2_TDpGtC;
+pm_taxCO2eq(t,regi)$(sameas(t, "2015") and regi_group("NEU_regi",regi)) = 5 * sm_DptCO2_2_TDpGtC;
 
 pm_taxCO2eq("2020",regi)$sameas(regi,"EUR") = 50;
 pm_taxCO2eq("2020",regi)$sameas(regi,"DEU") = 50;
@@ -41,6 +41,8 @@ pm_taxCO2eq("2020",regi)$sameas(regi,"OAS") = 5;
 pm_taxCO2eq("2020",regi)$sameas(regi,"REF") = 2.5;
 pm_taxCO2eq("2020",regi)$sameas(regi,"SSA") = 1;
 pm_taxCO2eq("2020",regi)$sameas(regi,"USA") = 20;
+
+pm_taxCO2eq("2020",regi) = sm_DptCO2_2_TDpGtC * pm_taxCO2eq("2020",regi)
 
 *** parameters for exponential increase after NDC targets
 Scalar p45_taxCO2eqGlobal2030 "startprice in 2030 (unit TDpGtC) of global CO2eq taxes towards which countries converge";
