@@ -10,13 +10,6 @@
 
 *** sm_DptCO2_2_TDpGtC converts tax value from $/t CO2eq to T$/GtC
 
-*** set ETS price in 2010 and 2015 for EUR, NEU
-pm_taxCO2eq(t,regi)$(sameas(t, "2010") and regi_group("EUR_regi",regi)) = 10 * sm_DptCO2_2_TDpGtC;
-pm_taxCO2eq(t,regi)$(sameas(t, "2010") and regi_group("NEU_regi",regi)) = 2.5 * sm_DptCO2_2_TDpGtC;
-
-pm_taxCO2eq(t,regi)$(sameas(t, "2015") and regi_group("EUR_regi",regi)) = 10 * sm_DptCO2_2_TDpGtC;
-pm_taxCO2eq(t,regi)$(sameas(t, "2015") and regi_group("NEU_regi",regi)) = 5 * sm_DptCO2_2_TDpGtC;
-
 pm_taxCO2eq("2020",regi)$sameas(regi,"EUR") = 25;
 pm_taxCO2eq("2020",regi)$sameas(regi,"DEU") = 25;
 pm_taxCO2eq("2020",regi)$sameas(regi,"ECE") = 25;
@@ -47,7 +40,7 @@ pm_taxCO2eq("2020",regi) = sm_DptCO2_2_TDpGtC * pm_taxCO2eq("2020",regi)
 *** parameters for exponential increase after NDC targets
 Scalar p45_taxCO2eqGlobal2030 "startprice in 2030 (unit TDpGtC) of global CO2eq taxes towards which countries converge";
 p45_taxCO2eqGlobal2030 = 30 * sm_DptCO2_2_TDpGtC;
-Scalar p45_taxCO2eqYearlyIncrease "yearly multiplicative increase of co2 tax, write 3% as 1.03" /1.0125/;
+Scalar p45_taxCO2eqYearlyIncrease "yearly multiplicative increase of co2 tax, write 3% as 1.03" /1.015/;
 
 Scalar p45_taxCO2eqConvergenceYear "year until which CO2eq taxes have converged globally" /2100/;
 *** set Years for CO2eq taxes to converge after 2030

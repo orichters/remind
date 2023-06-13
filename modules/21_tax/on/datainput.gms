@@ -153,20 +153,10 @@ $offdelim
 /
 ;
 
-** Fixing European 2020 carbon price to 20€/t CO2 (other regions to zero)
-f21_taxCO2eqHist("2020",regi) = 0;
-f21_taxCO2eqHist("2020",regi)$(regi_group("EUR_regi",regi)) =  20;
-
 *** convert from $/tCO2 to T$/GtC
 pm_taxCO2eqHist(t,regi) = 0;
+pm_taxCO2eqHist(t,regi) = f21_taxCO2eqHist(t,regi) * sm_DptCO2_2_TDpGtC;
 
-if(cm_iterative_target_adj eq 0,
-  pm_taxCO2eqHist(t,regi)$(sameas(t, "2010") and regi_group("EUR_regi",regi)) = 10 * sm_DptCO2_2_TDpGtC;
-  pm_taxCO2eqHist(t,regi)$(sameas(t, "2010") and regi_group("NEU_regi",regi)) = 2.5 * sm_DptCO2_2_TDpGtC;
-  pm_taxCO2eqHist(t,regi)$(sameas(t, "2015") and regi_group("EUR_regi",regi)) = 10 * sm_DptCO2_2_TDpGtC;
-  pm_taxCO2eqHist(t,regi)$(sameas(t, "2015") and regi_group("NEU_regi",regi)) = 5 * sm_DptCO2_2_TDpGtC;
-** was: f21_taxCO2eqHist(t,regi) * sm_DptCO2_2_TDpGtC
-);
 
 *JeS for SO2 tax case: tax path in 10^12$/TgS (= 10^6 $/t S) @ GDP/cap of 1000$/cap  (value gets scaled by GDP/cap)
 if((cm_so2tax_scen eq 0),
