@@ -653,6 +653,12 @@ if (! "--test" %in% flags && ! "--gamscompile" %in% flags) {
 message("\nDone: ", finishedRuns, " runs already finished. ", deletedFolders, " folders deleted. ",
         startedRuns, " runs started. ", waitingRuns, " runs are waiting.",
         if("--test" %in% flags) "\nYou are in TEST mode, only RData files were written.")
+if (file.exists("/p") && "qos" %in% names(scenarios_coupled)
+    && any(scenarios_coupled[common, "qos"] == "multiplayer")) {
+  message("Some runs use multiplayer mode. Either you or a colleagues has to run 'Rscript scripts/utils/multiplayer.R' ",
+          "which creates a recurrent slurm job that starts the runs for which no free priority slot was available. ",
+          "You have to terminate the 'multiplayer' job once all runs are started.")
+}
 # make sure we have a non-zero exit status if there were any errors
 if (0 < errorsfound) {
   stop(red, errorsfound, NC, " errors were identified, check logs above for details.")
