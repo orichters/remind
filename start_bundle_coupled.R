@@ -523,10 +523,14 @@ for(scen in common){
     }
     foldername <- file.path("output", fullrunname)
     if ((i > start_iter_first || !scenarios_coupled[scen, "start_magpie"]) && file.exists(foldername)) {
-      if (errorsfound == 0) {
-        if (! "--test" %in% flags) unlink(foldername, recursive = TRUE, force = TRUE)
-        message("Delete ", foldername, if ("--test" %in% flags) " if not in test mode", ". ", appendLF = FALSE)
-        deletedFolders <- deletedFolders + 1
+      if (errorsfound == 0 && ! any(c("--test", "--gamscompile") %in% flags)) {
+        message("Folder ", foldername, " exists but incomplete. Delete it and rerun (else will be skipped)? y/N")
+        if (tolower(gms::getLine()) %in% c("y", "yes")) {
+          unlink(foldername, recursive = TRUE, force = TRUE)
+          deletedFolders <- deletedFolders + 1
+        } else {
+          start_now <- FALSE
+        }
       }
     }
 
