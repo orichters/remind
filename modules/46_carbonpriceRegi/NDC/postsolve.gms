@@ -68,7 +68,7 @@ p46_previousYearInLoop = 2020;
 *** interpolate taxCO2eq linearly from 0 in 2020 to first NDC target and between NDC targets
 loop(regi,
   p46_previousYearInLoop = 2020;
-  p46_taxPreviousYearInLoop = smax(t$(t.val = p46_previousYearInLoop), pm_taxCO2eqRegi(t,regi) );
+  p46_taxPreviousYearInLoop = smax(ttot$(ttot.val = p46_previousYearInLoop), pm_taxCO2eqRegi(ttot,regi) );
   loop(p46_NDCyearSet(t,regi) ,
     pm_taxCO2eqRegi(t2,regi)$(t2.val > p46_previousYearInLoop AND t2.val < t.val)
       = p46_taxPreviousYearInLoop + (t2.val - p46_previousYearInLoop) * (pm_taxCO2eqRegi(t,regi) - p46_taxPreviousYearInLoop)/(t.val - p46_previousYearInLoop);
