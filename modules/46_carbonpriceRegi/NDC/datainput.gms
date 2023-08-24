@@ -7,7 +7,7 @@
 *** SOF ./modules/46_carbonpriceRegi/NDC/datainput.gms
 
 *** parameters for exponential increase after NDC targets
-Scalar p46_taxCO2eqConvergenceYear "year until which CO2eq taxes have converged globally" /2100/;
+Scalar p46_taxCO2eqConvergenceYear "year until which CO2eq taxes have converged globally" /2200/;
 Scalar p46_taxCO2eqGlobal2030 "startprice in 2030 (unit TDpGtC) of global CO2eq taxes towards which countries converge";
 p46_taxCO2eqGlobal2030 = 0 * sm_DptCO2_2_TDpGtC;
 Scalar p46_taxCO2eqYearlyIncrease "yearly multiplicative increase of co2 tax, write 3% as 1.03" /1/;
@@ -101,8 +101,8 @@ $endif.p46_netZero
 *** parameters for selecting NDC years
 Scalar p46_ignoreNDCbefore          "NDC targets before this years are ignored, for example to exclude 2030 targets" /2028/;
 p46_ignoreNDCbefore = max(p46_ignoreNDCbefore, cm_startyear)
-Scalar p46_ignoreNDCafter           "NDC targets after  this years are ignored, for example to exclude 2050 net zero targets" /2038/;
-Scalar p46_minRatioOfCoverageToMax  "only targets whose coverage is this times p46_bestNDCcoverage are considered. Use 1 for only best." /0.2/;
+Scalar p46_ignoreNDCafter           "NDC targets after  this years are ignored, for example to exclude 2050 net zero targets" /2100/;
+Scalar p46_minRatioOfCoverageToMax  "only targets whose coverage is this times p46_bestNDCcoverage are considered. Use 1 for only best." /0.7/;
 Scalar p46_useSingleYearCloseTo     "if 0: use all. If > 0: use only one single NDC target per country closest to this year (use 2030.4 to prefer 2030 over 2035 over 2025)" /0/;
 
 Set p46_NDCyearSet(ttot,all_regi)               "YES for years whose NDC targets is used";

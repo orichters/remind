@@ -39,7 +39,7 @@ if (! exists("project")) {
     model <- "REMIND-MAgPIE 3.2-4.6"
     mapping <- c("AR6", "AR6_NGFS")
     iiasatemplate <- "../ngfs-phase-4-internal-workflow/definitions/variable/variables.yaml"
-    removeFromScen <- "C_|_bIT|_bit|_bIt"
+    removeFromScen <- "C_|_bIT|_bit|_bIt|_1Dollar|_qtty|_netZero20p"
   } else if ("ENGAGE_4p5" %in% project) {
     model <- "REMIND 3.2"
     mapping <- c("AR6", "AR6_NGFS")
