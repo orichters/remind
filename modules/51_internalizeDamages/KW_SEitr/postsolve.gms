@@ -40,7 +40,7 @@ pm_taxCO2eqSCC(ttot,regi)$(ttot.val ge 2020) = max(0, p51_scc(ttot) * (44/12)/10
 *);
 
 *optional: prevent drastic decline towards the final periods
-*pm_taxCO2eqSCC(ttot,regi)$(ttot.val gt 2100) = pm_taxCO2eqSCC("2100",regi); 
+pm_taxCO2eqSCC(ttot,regi)$(ttot.val gt 2110) = pm_taxCO2eqSCC("2110",regi); 
 *optional: dampen price adjustment to ease convergence
 *pm_taxCO2eqSCC(ttot,regi)$(ttot.val gt 2110) = pm_taxCO2eqSCC("2110",regi) + (ttot.val - 2110) * (pm_taxCO2eqSCC("2110",regi) - pm_taxCO2eqSCC("2100",regi))/10; 
 
