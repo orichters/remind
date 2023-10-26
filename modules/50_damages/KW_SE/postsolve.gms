@@ -77,6 +77,14 @@ p50_damageGrowthRateImp(tall,tall2,regi)$(tall.val ge 2005 and tall.val le 2300 
   + p50_damageFuncCoefb2 * p50_delTimp2(tall,tall2,regi)*p50_regionalTemperatureImp(tall,tall2-1,regi)
   - p50_seImp(tall,tall2,regi)**0.5*cm_damage_KWSE
 );
+*the damage growth rate before the year of the emission pulse is the undisturbed one!
+p50_damageGrowthRateImp(tall,tall2,regi)$(tall.val ge 2005 and tall.val le 2300 and tall2.val lt tall.val and tall2.val ge 2005) =
+(    p50_damageFuncCoefa1 * p50_delT(tall2,regi)
+  + p50_damageFuncCoefa2 * p50_delT2(tall2,regi)
+  + p50_damageFuncCoefb1 * p50_delT(tall2,regi)*pm_regionalTemperature(tall2-1,regi)
+  + p50_damageFuncCoefb2 * p50_delT2(tall2,regi)*pm_regionalTemperature(tall2-1,regi)
+  - p50_se(tall2,regi)**0.5*cm_damage_KWSE
+);
 
 *no damages before 2020
 pm_damageGrowthRate(tall,regi)$(tall.val le 2020) = 0;
@@ -86,6 +94,8 @@ p50_damageGrowthRateImp(tall,tall2,regi)$(tall.val le 2020) = 0;
 pm_damageGrowthRate(tall,regi)$(tall.val gt 2150) = 0;
 p50_damageGrowthRateImp(tall,tall2,regi)$(tall.val gt 2150) = 0;
 p50_damageGrowthRateImp(tall,tall2,regi)$(tall2.val gt 2150) = 0;
+*pm_damageGrowthRate(tall,regi)$(tall.val gt 2150) = pm_damageGrowthRate("2150",regi);
+*p50_damageGrowthRateImp(tall,tall2,regi)$(tall2.val gt 2150) = p50_damageGrowthRateImp(tall,"2150",regi);
 
 *damage function. match observed 2020 GDP, that is, assume that no climate damages unitl then.
 *damage factor for budget equation
@@ -96,8 +106,8 @@ pm_damage(tall,regi)$(tall.val ge 2020 and tall.val le 2300) =
 ;
 
 *damage with emission pulse for SCC calculation
-pm_damageImp(tall,tall2,regi)$(tall.val ge 2020 and tall.val le 2300 and tall2.val ge 2020 and tall2.val le 2300) =
-    prod(tall3$(tall3.val gt tall.val AND tall3.val le tall2.val),
+pm_damageImp(tall,tall2,regi)$(tall.val ge 2020 and tall.val le 2150 and tall2.val ge 2020 and tall2.val le 2300) =
+    prod(tall3$(tall3.val gt 2020 AND tall3.val le tall2.val),
     (1 + p50_damageGrowthRateImp(tall,tall3,regi))
     )
 ;
