@@ -123,16 +123,13 @@ NC    <- "\033[0m"   # No Color
 
 # define arguments that are accepted (test for backward compatibility)
 startgroup <- "1"
-flags <- lucode2::readArgs("startgroup", .flags = c(h = "--help", g = "--gamscompile", i = "--interactive", p = "--parallel", t = "--test"))
+flags <- lucode2::readArgs("startgroup", .flags = c(h = "--help", g = "--gamscompile", i = "--interactive", t = "--test"))
 if (! exists("argv")) argv <- commandArgs(trailingOnly = TRUE)
 if ("--help" %in% flags) {
   message(helpText)
   q()
 }
 if ("test" %in% argv) flags <- unique(c(flags, "--test"))
-if ("--parallel" %in% flags) {
-  message("The flag --parallel is not necessary anymore, as this is default now")
-}
 
 # load arguments from command line
 argv <- grep('(^-|=|^test$)', argv, value = TRUE, invert = TRUE)
@@ -154,7 +151,7 @@ if (length(argv) > 0) {
   message("")
 }
 
-if (! file.exists("output")) dir.create("output")
+dir.create(file.path(path_remind, "output"), showWarnings = FALSE)
 
 ensureRequirementsInstalled(rerunPrompt = "start_bundle_coupled.R")
 
@@ -178,7 +175,7 @@ message("n600_iterations:       ", n600_iterations)
 message("run_compareScenarios:  ", run_compareScenarios)
 
 if (any(! file.exists(c(path_settings_coupled, path_settings_remind))) ||
-    any(! dir.exists(c(path_remind, path_magpie, path_remind_oldruns, path_magpie_oldruns)))) {
+    any(! dir.exists(c(path_remind, path_magpie)))) {
   stop("Missing files or directories, see in red above.")
 }
 
