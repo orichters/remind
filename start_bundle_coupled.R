@@ -70,8 +70,8 @@ prefix_runname <- "C_"
 # If there are existing runs you would like to take the gdxes (REMIND) or reportings (REMIND or MAgPIE) from, provide the path here and the name prefix below.
 # Note: the scenario names of the old runs have to be identical to the runs that are to be started. If they differ please provide the names of the old scenarios in the
 # file that you specified on path_settings_coupled (scenario_config_coupled_xxx.csv).
-path_remind_oldruns <- file.path("../remind-2023-05-17/output")
-path_magpie_oldruns <- file.path("../remind-2023-05-17/magpie/output")
+path_remind_oldruns <- normalizePath(file.path("..", "d_remind-2023-06-12", "output"))
+path_magpie_oldruns <- normalizePath(file.path("..", "d_remind-2023-06-12", "magpie", "output"))
 
 # If you want the script to find gdxs or reports of older runs as starting point for new runs please
 # provide the prefix of the old run names so the script can find them.
@@ -85,8 +85,11 @@ max_iterations <- 5
 # Afterwards REMIND runs for "n600_iterations" iterations with results from higher resolution.
 n600_iterations <- 0 # max_iterations
 
+# default used for all runs with no qos specified in the config file
+qos_default <- "short"
+
 # run a compareScenario for each scenario comparing all rem-x: Choose qos (short, priority) or set to FALSE
-run_compareScenarios <- "short"
+run_compareScenarios <- FALSE # "short"
 
 # use an empty magpie model (just reproduces the latest AMT results)
 magpie_empty <- FALSE
@@ -175,11 +178,11 @@ if (requireNamespace("piamenv", quietly = TRUE) && packageVersion("piamenv") >= 
 }
 
 errorsfound <- 0
-startedRuns <- 0
-finishedRuns <- 0
-waitingRuns <- 0
-qosRuns <- NULL
-deletedFolders <- 0
+startedRuns <- NULL
+finishedRuns <- NULL
+waitingRuns <- NULL
+qosRuns <- list()
+deletedFolders <- NULL
 
 stamp <- format(Sys.time(), "_%Y-%m-%d_%H.%M.%S")
 
@@ -264,13 +267,9 @@ for (scen in common) {
   }
 }
 
-qos_default <- "multiplayer"
+# assign qos_default as defined above to runs without qos specification
 if (! "qos" %in% names(scenarios_coupled)) scenarios_coupled[, "qos"] <- qos_default
 scenarios_coupled[, "qos"] <- ifelse(is.na(scenarios_coupled[, "qos"]), qos_default, scenarios_coupled[, "qos"])
-if (file.exists("/p") && sum(scenarios_coupled[common, "qos"] == "priority", na.rm = TRUE) > 4) {
-  message("\nAttention, you want to start more than 4 runs with qos=priority mode.")
-  message("They may not be able to run in parallel on the PIK cluster.")
-}
 
 ####################################################
 ######## PREPARE AND START COUPLED RUNS ############
@@ -284,7 +283,7 @@ for(scen in common){
   runname      <- paste0(prefix_runname, scen)            # name of the run that is used for the folder names
   path_report  <- NULL                                    # sets the path to the report REMIND is started with in the first loop
   qos          <- scenarios_coupled[scen, "qos"]          # set the SLURM quality of service (priority/short/medium/...)
-  qosRuns[qos] <- if (is.null(qosRuns[qos])) 1 else qosRuns[qos] + 1 # count
+  qosRuns[qos] <- if (is.null(qosRuns[[qos]])) 1 else qosRuns[[qos]] + 1 # count
   sbatch       <- scenarios_coupled[scen, "sbatch"]       # retrieve sbatch options from scenarios_coupled
   if (is.null(sbatch) || is.na(sbatch)) sbatch <- ""      # if sbatch could not be found in scenarios_coupled use empty string
   start_iter_first <- 1                                   # iteration to start the coupling with
@@ -364,7 +363,7 @@ for(scen in common){
   } else if (iter_rem >= max_iterations & iter_mag >= max_iterations - 1) {
     message("This scenario is already completed with rem-", iter_rem, " and mag-", iter_mag, " and max_iterations=", max_iterations, ".")
     scenarios_coupled[scen, "start_scenario"] <- FALSE
-    finishedRuns <- finishedRuns + 1
+    finishedRuns <- c(finishedRuns, scen)
     next
   } else {
     message(red, "Error", NC, ": REMIND has finished ", iter_rem, " runs, but MAgPIE ", iter_mag, " runs. Something is wrong!")
@@ -531,7 +530,7 @@ for(scen in common){
         message("Folder ", foldername, " exists but incomplete. Delete it and rerun (else will be skipped)? y/N")
         if (tolower(gms::getLine()) %in% c("y", "yes")) {
           unlink(foldername, recursive = TRUE, force = TRUE)
-          deletedFolders <- deletedFolders + 1
+          deletedFolders <- c(deletedFolders, basename(foldername))
         } else {
           start_now <- FALSE
         }
@@ -591,7 +590,7 @@ for(scen in common){
       message(red, "Error", NC, ": Cannot start because ", paste(setdiff(missingRefRuns, knownRefRuns), collapse = ", "), " not found!")
       errorsfound <- errorsfound + length(setdiff(missingRefRuns, knownRefRuns))
     } else {
-      waitingRuns <- waitingRuns + 1
+      waitingRuns <- c(waitingRuns, fullrunname)
     }
   }
 }
@@ -613,7 +612,7 @@ for (scen in common) {
     if (errorsfound > 0) {
       message("Errors found: run ", fullrunname, " NOT submitted to the cluster.")
     } else {
-      startedRuns <- startedRuns + 1
+      startedRuns <- c(startedRuns, fullrunname)
       if ("--test" %in% flags || "--gamscompile" %in% flags) {
         message("Test mode: run ", fullrunname, " NOT submitted to the cluster.")
       } else {
@@ -668,12 +667,13 @@ if (! "--test" %in% flags && ! "--gamscompile" %in% flags) {
 
 message("#### Summary ####")
 message("\nDone.", if(any(c("--test", "--gamscompile") %in% flags)) " You are in TEST or gamscompile mode, no runs were actually started.")
-message("- ", finishedRuns, " runs already finished.")
-message("- ", deletedFolders, " folders deleted.")
-message("- ", startedRuns, " runs started.")
-message("- ", waitingRuns, " runs are waiting.")
-message("qos statistics: ", paste0(names(qosRuns), ": ", qosRuns, collapse = ", "))
-if (file.exists("/p") && isTRUE(qosRuns["multiplayer"] > 0)) {
+message("- ", length(finishedRuns), " runs already finished: ", paste(finishedRuns, collapse = ", "))
+message("- ", length(deletedFolders), " folders deleted: ", paste(deletedFolders, collapse = ", "))
+message("- ", length(startedRuns), " runs started: ", paste(startedRuns, collapse = ", "))
+message("- ", length(waitingRuns), " runs are waiting: ", paste(waitingRuns, collapse = ", "))
+message("- qos statistics: ", paste0(names(qosRuns), ": ", unlist(qosRuns), collapse = ", "), ".",
+        if (isTRUE(qosRuns[["priority"]] > 4)) " More than 4 runs with qos=priority. They may not be able to run in parallel on the PIK cluster.")
+if (file.exists("/p") && isTRUE(qosRuns[["multiplayer"]] > 0)) {
   startfile <- file.path("scripts", "multiplayer", "start.R")
   message("Some runs use multiplayer mode. Ask your colleagues to run 'Rscript ", startfile, "' in this folder.")
   message("This creates a recurrent slurm job that starts the runs for which no free priority slot was available.")

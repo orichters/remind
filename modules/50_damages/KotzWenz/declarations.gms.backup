@@ -1,0 +1,18 @@
+Parameters
+pm_GDPfrac(tall,iso)
+p50_globalMeanTemp2020(nboot,tall)
+p50_damageIso(tall,iso,nboot)
+p50_damageIsoPerc(tall,iso)
+pm_damage(tall,all_regi)
+p50_damageMarginalIso(tall,iso,nboot)
+p50_damageMarginalIsoPerc(tall,iso)
+pm_damageMarginal(tall,all_regi)
+r(nboot)
+pct(*) /median 50.0, 95 95.0/
+p50_rank(nboot)
+;
+
+positive variable
+vm_damageFactor(ttot,all_regi)      "damage factor reducing GDP"
+vm_damageProdFactor(ttot,all_regi,all_in)      "damage factor reducing production factors"
+;

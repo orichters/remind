@@ -900,6 +900,16 @@ parameter
   cm_damage_KWSE                        = 0;     !! def = 0
 *'  {1.645 for 90% CI, 1.96 for 95% CI, no correction when 0}
 parameter
+  cm_sccConvergence			  "convergence indicator for SCC iteration"
+;
+  cm_sccConvergence			= 0.05;  !! def = 0.05
+;
+parameter
+  cm_tempConvergence			  "convergence indicator for temperature in damage iteration"
+;
+  cm_tempConvergence			= 0.05;  !! def = 0.05
+;
+parameter
   cm_carbonprice_temperatureLimit "not-to-exceed temperature target in degree above pre-industrial"
 ;
   cm_carbonprice_temperatureLimit       = 1.8;   !! def = 1.8
@@ -1557,6 +1567,8 @@ $setGlobal cm_magicc_temperatureImpulseResponse  off           !! def = off
 $setGlobal cm_magicc_config  OLDDEFAULT    !! def = OLDDEFAULT ; {OLDDEFAULT, RCP26_[5,15,..,95], TCRE_[LOWEST,LOW,MEDIUM,HIGH,HIGHEST] }
 *'  climate damages (HowardNonCatastrophic, DICE2013R, DICE2016, HowardNonCatastrophic, HowardInclCatastrophic, KWcross, KWpanelPop}
 $setGlobal cm_damage_DiceLike_specification  HowardNonCatastrophic   !! def = HowardNonCatastrophic
+*** cfg$gms$cm_KotzWenzPerc <- mean   #def = mean; {low,med,mean,high} the percentile of the damage distribution from Kotz et al. (2024)
+$setGlobal cm_KotzWenzPerc  mean  !! def = mean
 *** cfg$gms$cm_damage_Labor_exposure <- "low" # def = "low"; {low,high}
 $setGlobal cm_damage_Labor_exposure  low    !!def = low
 *** cfg$gms$cm_TCssp <- "SSP2"  #def = "SSP2"; {SSP2,SSP5} the scenario for which the damage function is specified - currently only SSP2 and SSP5 are available

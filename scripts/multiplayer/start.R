@@ -15,10 +15,10 @@ if (any(squeueresult == paste("multiplayer", getwd()))) {
   message("\n### A multiplayer job is already running for your user in this folder. Skipping.")
 } else {
   message("\n### Thanks for entering multiplayer mode.")
-  message("A slurm job named 'multiplayer' on the 'standby' node will be started.")
+  message("A slurm job named 'multiplayer' on the 'short' qos will be started.")
   message("It tries to start new runs on 'priority' slots every 15 minutes and starts itself again.")
-  message("Please kill this job manually once you don't need it anymore.")
-  message("Check 'scripts/multiplayer/log.txt' to see how it goes.")
+  message("If you are ready, delete the 'slurmjobs.sh' file in this folder which will stop all multiplayer runs.")
+  message("Check 'scripts/multiplayer/log.txt' to see the progress.")
   system(command)
 }
 

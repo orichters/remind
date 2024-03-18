@@ -325,6 +325,16 @@ if (sm_globalBudget_dev gt 1.01 OR sm_globalBudget_dev lt 0.99,
   p80_messageShow("target") = YES;
 );
 
+***additional criterion: if damage internalization is on, is damage iteration converged?
+p80_sccConvergenceMaxDeviation_iter(iteration) = pm_sccConvergenceMaxDeviation;
+p80_gmt_conv_iter(iteration) = pm_gmt_conv;
+$ifthen.internalizeDamages not "%internalizeDamages%" == "off"
+   if(p80_sccConvergenceMaxDeviation_iter(iteration) gt cm_sccConvergence OR p80_gmt_conv_iter(iteration) gt cm_tempConvergence,
+      s80_bool = 0;
+      p80_messageShow("damage") = YES;
+   );
+$endIf.internalizeDamages
+
 
 display "####";
 display "Convergence diagnostics";
@@ -414,6 +424,14 @@ $ifthen.cm_implicitPePriceTarget not "%cm_implicitPePriceTarget%" == "off"
           display pm_implicitPePrice_NotConv, pm_implicitPePrice_ignConv;
 	      );
 $endIf.cm_implicitPePriceTarget
+$ifthen.internalizeDamages not "%internalizeDamages%" == "off"
+	if(sameas(convMessage80,"damage"),
+	  display "#### 11) The damage iteration did not converge.";
+          display "#### Check out below the values for pm_gmt_conv and pm_sccConvergenceMaxDeviation."
+          display "#### They should be below 0.05."
+          display pm_gmt_conv, pm_sccConvergenceMaxDeviation;
+	);
+$endIf.internalizeDamages
    );
 
 display "See the indicators below to dig deeper on the respective reasons of non-convergence: "

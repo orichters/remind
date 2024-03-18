@@ -84,6 +84,8 @@ p80_taxrev_dev(ttot,all_regi)              "deviation of tax revenue normalized 
 
 pm_fuExtrForeign(ttot,all_regi,all_enty,rlf) "foreign fuel extraction"
 p80_taxrev_dev(ttot,all_regi)                "deviation of tax revenue in percent GDP"
+p80_sccConvergenceMaxDeviation_iter(iteration)    "max deviation of SCC from last iteration [percent] per iteration"
+p80_gmt_conv_iter(iteration)                      "global mean temperature convergence per iteration"
 ;
 
 positive variable

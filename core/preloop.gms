@@ -20,6 +20,8 @@ model hybrid /all/;
 ***------------------------------------------------------------------------------
 ***------------------------------------------------------------------------------
 
+$libInclude rank 
+
 *** Set level values, so that reference value is available even if gdx has no level value to overwrite. Gams complains if .l was never initialized.
 vm_emiMacSector.l(ttot,regi,enty)      = 0;
 vm_emiTe.l(ttot,regi,enty)      = 0;

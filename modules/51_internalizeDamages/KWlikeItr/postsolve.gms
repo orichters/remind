@@ -44,7 +44,7 @@ display p51_scc;
 p51_scc(tall) = p51_sccLastItr(tall) *  min(max( (p51_scc(tall)/max(p51_sccLastItr(tall),1e-8)),1 - 0.5*0.95**iteration.val),1 + 0.95**iteration.val);
 
 pm_taxCO2eqSCC(ttot,regi) = 0;
-pm_taxCO2eqSCC(ttot,regi)$(ttot.val ge 2020) = max(0, p51_scc(ttot) * (44/12)/1000);
+pm_taxCO2eqSCC(t,regi)$(t.val ge 2020) = max(0, p51_scc(t) * (44/12)/1000);
 
 *);
 
@@ -57,8 +57,9 @@ display p51_scc,pm_taxCO2eqSCC;
 
 
 * convergence indicator:
-p51_sccConvergenceMaxDeviation = 100 * smax(tall$(tall.val ge cm_startyear and tall.val lt 2150),abs(p51_scc(tall)/max(p51_sccLastItr(tall),1e-8) - 1) );
-display p51_sccConvergenceMaxDeviation;
+pm_sccConvergenceMaxDeviation = 0;
+pm_sccConvergenceMaxDeviation = 100 * smax(tall$(tall.val ge cm_startyear and tall.val lt 2150),abs(p51_scc(tall)/max(p51_sccLastItr(tall),1e-8) - 1) );
+display pm_sccConvergenceMaxDeviation;
 
 
 
