@@ -58,7 +58,7 @@ if (! dir.exists(path_magpie)) path_magpie <- normalizePath(file.path(getwd(), "
 # path_settings_remind contains the detailed configuration of the REMIND scenarios
 # path_settings_coupled defines which runs will be started, coupling infos, and optimal gdx and report information that overrides path_settings_remind
 # these settings will be overwritten if you provide the path to the coupled file as first command line argument
-path_settings_coupled <- file.path(path_remind, "config", "scenario_config_coupled.csv")
+path_settings_coupled <- file.path(path_remind, "config", "scenario_config_coupled_NGFS.csv")
 path_settings_remind  <- sub("scenario_config_coupled", "scenario_config", path_settings_coupled)
                          # file.path(path_remind, "config", "scenario_config.csv")
 
@@ -123,7 +123,7 @@ blue  <- "\033[0;34m"
 NC    <- "\033[0m"   # No Color
 
 # define arguments that are accepted (test for backward compatibility)
-startgroup <- "1"
+startgroup <- "NGFS"
 flags <- lucode2::readArgs("startgroup", .flags = c(h = "--help", g = "--gamscompile", i = "--interactive", t = "--test"))
 if (! exists("argv")) argv <- commandArgs(trailingOnly = TRUE)
 if ("--help" %in% flags) {
