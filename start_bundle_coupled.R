@@ -69,8 +69,8 @@ prefix_runname <- "C_"
 # If there are existing runs you would like to take the gdxes (REMIND) or reportings (REMIND or MAgPIE) from, provide the path here and the name prefix below.
 # Note: the scenario names of the old runs have to be identical to the runs that are to be started. If they differ please provide the names of the old scenarios in the
 # file that you specified on path_settings_coupled (scenario_config_coupled_xxx.csv).
-path_remind_oldruns <- file.path(path_remind, "output")
-path_magpie_oldruns <- file.path(path_magpie, "output")
+path_remind_oldruns <- file.path("/p/tmp/oliverr/NGFS_v5/remind-2024-02-28", "output")
+path_magpie_oldruns <- file.path("/p/tmp/oliverr/NGFS_v5/remind-2024-02-28", "magpie", "output")
 
 # If you want the script to find gdxs or reports of older runs as starting point for new runs please
 # provide the prefix of the old run names so the script can find them.
