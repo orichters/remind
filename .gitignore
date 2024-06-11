@@ -84,6 +84,12 @@ runtime.rds
 # ignore slurm logs
 slurm-[0-9]*.log
 slurm-[0-9]*.out
+
+# ignore helper file and log for multiplayer mode
+/scripts/multiplayer/log.txt
+/scripts/multiplayer/slurmjobs.sh
+
+# ignore calibration results
 calibration_results/
 
 # ignore test logs
