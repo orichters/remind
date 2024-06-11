@@ -34,12 +34,11 @@ helpText <- "
 #'                       the full model.
 #'   --reprepare, -R:    rewrite full.gms and restart run
 #'   --restart, -r:      interactively restart run(s)
-#'   --test, -t:         test scenario configuration and writing the RData files
-#'                       in the REMIND main folder without starting the runs
+#'   --test, -t:         test scenario configuration without starting the runs
 #'   --testOneRegi, -1:  starting the REMIND run(s) in testOneRegi mode
 #'   startgroup=MYGROUP  when reading a scenario config .csv file, don't start
 #'                       everything specified by \"start = 1\", instead start everything
-#'                       specified by \"start = MYGROUP\"
+#'                       specified by \"start = MYGROUP\". Use startgroup=* to start all.
 #'   titletag=MYTAG      append \"-MYTAG\" to all titles of all runs that are started
 #'   slurmConfig=CONFIG  use the provided CONFIG as slurmConfig: a string, or an integer <= 16
 #'                       to select one of the options shown when running './start.R -t'.
@@ -74,15 +73,13 @@ if(!exists("argv")) argv <- commandArgs(trailingOnly = TRUE)
 argv <- argv[! grepl("^-", argv) & ! grepl("=", argv)]
 # check if user provided any unknown arguments or config files that do not exist
 if (length(argv) == 1) {
-  if (file.exists(argv)) {
-    config.file <- argv
-  } else if (file.exists(file.path("config", argv)) {
-    config.file <- file.path("config", argv)
-  } else {
-    stop("Unknown parameter provided: ", paste(argv, collapse = ", "))
-  }
-} else {
-  stop("You provided more than one file or other command line argument, start.R can only handle one.")
+  config.file <- argv
+  if (! file.exists(config.file)) config.file <- file.path("config", argv)
+  if (! file.exists(config.file)) config.file <- file.path("config", paste0("scenario_config_", argv, ".csv"))
+  if (! file.exists(config.file)) stop("Unknown parameter provided: ", paste(argv, collapse = ", "))
+} else if (length(argv) > 1) {
+  stop("You provided more than one file or other command line argument, start.R can only handle one: ",
+       paste(argv, collapse = ", "))
 }
 
 if ("--help" %in% flags) {
@@ -109,6 +106,9 @@ if (   'TRUE' != Sys.getenv('ignoreRenvUpdates')
   message("Consider updating with `piamenv::updateRenv()`.")
   Sys.sleep(1)
 }
+
+# initialize madrat settings
+invisible(madrat::getConfig(verbose = FALSE))
 
 errorsfound <- 0 # counts ignored errors in --test mode
 startedRuns <- 0
@@ -158,7 +158,7 @@ if (any(c("--reprepare", "--restart") %in% flags)) {
     if(! exists("slurmConfig")) {
       slurmConfig <- choose_slurmConfig(flags = flags)
     }
-    if ("--quick" %in% flags) slurmConfig <- combine_slurmConfig(slurmConfig, "--time=60")
+    if ("--quick" %in% flags && ! slurmConfig == "direct") slurmConfig <- combine_slurmConfig(slurmConfig, "--time=60")
     message()
     for (outputdir in outputdirs) {
       message("Restarting ", outputdir)
@@ -167,7 +167,7 @@ if (any(c("--reprepare", "--restart") %in% flags)) {
       # for debug, testOneRegi, quick: save original settings to cfg$backup; restore them from there if not set.
       if ("--debug" %in% flags) {
         if (is.null(cfg[["backup"]][["cm_nash_mode"]])) cfg$backup$cm_nash_mode <- cfg$gms$cm_nash_mode
-        cfg$gms$cm_nash_mode <- "debug"
+        cfg$gms$cm_nash_mode <- 1
       } else {
         if (! is.null(cfg[["backup"]][["cm_nash_mode"]])) cfg$gms$cm_nash_mode <- cfg$backup$cm_nash_mode
       }
@@ -241,12 +241,12 @@ if (any(c("--reprepare", "--restart") %in% flags)) {
   # ask for slurmConfig if not specified for every run
   if ("--gamscompile" %in% flags) {
     slurmConfig <- "direct"
-    if (! file.exists("input/source_files.log")) {
-      message("\n### Input data missing, need to compile REMIND first (2 min.)\n")
-      system("Rscript start.R config/tests/scenario_config_compile.csv")
-    }
-    message("\nTrying to compile the selected runs...")
+    message("\nTrying to compile ", nrow(scenarios), " selected runs...")
     lockID <- gms::model_lock()
+    if (length(missingInputData()) > 0) {
+      # try to fix missing input data, but only once at the beginning, not for every scenario
+      updateInputData(readDefaultConfig("."), remindPath = ".", gamsCompile = FALSE)
+    }
   }
   if (! exists("slurmConfig") & (any(c("--debug", "--quick", "--testOneRegi") %in% flags)
       | ! "slurmConfig" %in% names(scenarios) || any(is.na(scenarios$slurmConfig)))) {
@@ -269,11 +269,11 @@ if (any(c("--reprepare", "--restart") %in% flags)) {
 
     # testOneRegi settings
     if (any(c("--quick", "--testOneRegi") %in% flags) & length(config.file) == 0) {
-      cfg$title            <- "testOneRegi"
+      cfg$title            <- scen
       cfg$description      <- "A REMIND run with default settings using testOneRegi"
       cfg$gms$optimization <- "testOneRegi"
       cfg$output           <- NA
-      cfg$results_folder   <- "output/testOneRegi"
+      cfg$results_folder   <- paste0("output/", cfg$title)
       # delete existing Results directory
       cfg$force_replace    <- TRUE
       if (testOneRegi_region != "") cfg$gms$c_testOneRegi_region <- testOneRegi_region
@@ -316,7 +316,7 @@ if (any(c("--reprepare", "--restart") %in% flags)) {
     }
 
     if ("--debug" %in% flags) {
-      cfg$gms$cm_nash_mode <- "debug"
+      cfg$gms$cm_nash_mode <- 1
       cfg$slurmConfig      <- slurmConfig
     }
 
@@ -328,8 +328,13 @@ if (any(c("--reprepare", "--restart") %in% flags)) {
     # abort on too long paths ----
     cfg$gms$cm_CES_configuration <- calculate_CES_configuration(cfg, check = TRUE)
 
+    cfg <- checkFixCfg(cfg, testmode = "--test" %in% flags)
+    if ("errorsfoundInCheckFixCfg" %in% names(cfg)) {
+      errorsfound <- errorsfound + cfg$errorsfoundInCheckFixCfg
+    }
+
     # save the cfg object for the later automatic start of subsequent runs (after preceding run finished)
-    if (! "--gamscompile" %in% flags) {
+    if (! any(c("--test", "--gamscompile") %in% flags)) {
       filename <- paste0(cfg$title,".RData")
       message("   Writing cfg to file ", filename)
       save(cfg, file=filename)
@@ -349,23 +354,27 @@ if (any(c("--reprepare", "--restart") %in% flags)) {
       }
     }
     # print names of runs to be waited and subsequent runs if there are any
-    if (! start_now && ( ! "--gamscompile" %in% flags || "--interactive" %in% flags)) {
-      message("   Waiting for: ", paste(unique(cfg$files2export$start[path_gdx_list][! gdx_specified & ! gdx_na]), collapse = ", "))
-    }
-    if (length(rownames(cfg$RunsUsingTHISgdxAsInput)) > 0) {
-      message("   Subsequent runs: ", paste(rownames(cfg$RunsUsingTHISgdxAsInput), collapse = ", "))
+    if (! "--gamscompile" %in% flags || "--interactive" %in% flags) {
+      if (! start_now) {
+        message("   Waiting for: ", paste(unique(cfg$files2export$start[path_gdx_list][! gdx_specified & ! gdx_na]), collapse = ", "))
+      }
+      if (length(rownames(cfg$RunsUsingTHISgdxAsInput)) > 0) {
+        message("   Subsequent runs: ", paste(rownames(cfg$RunsUsingTHISgdxAsInput), collapse = ", "))
+      }
     }
   }
   message("")
   if (exists("lockID")) gms::model_unlock(lockID)
 }
 
+warnings()
+
 message("\nFinished: ", startedRuns, " runs started. ", waitingRuns, " runs are waiting. ",
         if (modeltestRunsUsed > 0) paste0(modeltestRunsUsed, " GDX files from modeltests selected."))
 if ("--gamscompile" %in% flags) {
   message("To investigate potential FAILs, run: less -j 4 --pattern='^\\*\\*\\*\\*' filename.lst")
 } else if ("--test" %in% flags) {
-  message("You are in --test mode: Rdata files were written, but no runs were started. ", errorsfound, " errors were identified.")
+  message("You are in --test mode: no runs were started. ", errorsfound, " errors were identified.")
 } else if (model_was_locked & (! "--restart" %in% flags | "--reprepare" %in% flags)) {
   message("The model was locked before runs were started, so they will have to queue.")
 }

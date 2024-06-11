@@ -5,9 +5,10 @@
 # |  REMIND License Exception, version 1.0 (see LICENSE file).
 # |  Contact: remind@pik-potsdam.de
 
-getReportData <- function(path_to_report,inputpath_mag="magpie",inputpath_acc="costs") {
-  #require(lucode, quietly = TRUE,warn.conflicts =FALSE)
+getReportData <- function(path_to_report,inputpath_mag="magpie_40",inputpath_acc="costs") {
+  
   require(magclass, quietly = TRUE,warn.conflicts =FALSE)
+  
   .bioenergy_price <- function(mag){
     notGLO <- getRegions(mag)[!(getRegions(mag)=="GLO")]
     if("Demand|Bioenergy|++|2nd generation (EJ/yr)" %in% getNames(mag)) {
@@ -18,22 +19,12 @@ getReportData <- function(path_to_report,inputpath_mag="magpie",inputpath_acc="c
       out <- mag[,,"Price|Primary Energy|Biomass (US$2005/GJ)"]*0.0315576 # with transformation factor from US$2005/GJ to US$2005/Wa
     }
     out["JPN",is.na(out["JPN",,]),] <- 0
+    tmp <- out
     dimnames(out)[[3]] <- NULL #Delete variable name to prevent it from being written into output file
     write.magpie(out[notGLO,,],paste0("./modules/30_biomass/",inputpath_mag,"/input/p30_pebiolc_pricemag_coupling.csv"),file_type="csvr")
+    return(tmp[notGLO,,])
   }
-  .bioenergy_costs <- function(mag){
-    notGLO <- getRegions(mag)[!(getRegions(mag)=="GLO")]
-    if ("Production Cost|Agriculture|Biomass|Energy Crops (million US$2005/yr)" %in% getNames(mag)) {
-      out <- mag[,,"Production Cost|Agriculture|Biomass|Energy Crops (million US$2005/yr)"]/1000/1000 # with transformation factor from 10E6 US$2005 to 10E12 US$2005
-    }
-    else {
-      # in old MAgPIE reports the unit is reported to be "billion", however the values are in million
-      out <- mag[,,"Production Cost|Agriculture|Biomass|Energy Crops (billion US$2005/yr)"]/1000/1000 # with transformation factor from 10E6 US$2005 to 10E12 US$2005
-    }
-    out["JPN",is.na(out["JPN",,]),] <- 0
-    dimnames(out)[[3]] <- NULL
-    write.magpie(out[notGLO,,],paste0("./modules/30_biomass/",inputpath_mag,"/input/p30_pebiolc_costsmag.csv"),file_type="csvr")
-  }
+
   .bioenergy_production <- function(mag){
     notGLO <- getRegions(mag)[!(getRegions(mag)=="GLO")]
     if("Demand|Bioenergy|2nd generation|++|Bioenergy crops (EJ/yr)" %in% getNames(mag)) {
@@ -45,9 +36,12 @@ getReportData <- function(path_to_report,inputpath_mag="magpie",inputpath_acc="c
     }
     out[which(out<0)] <- 0 # set negative values to zero since they cause errors in GMAS power function
     out["JPN",is.na(out["JPN",,]),] <- 0
+    tmp <- out
     dimnames(out)[[3]] <- NULL
     write.magpie(out[notGLO,,],paste0("./modules/30_biomass/",inputpath_mag,"/input/pm_pebiolc_demandmag_coupling.csv"),file_type="csvr")
+    return(tmp[notGLO,,])
   }
+  
   .emissions_mac <- function(mag) {
     # define three columns of dataframe:
     #   emirem (remind emission names)
@@ -111,30 +105,6 @@ getReportData <- function(path_to_report,inputpath_mag="magpie",inputpath_acc="c
     for (i in 1:nrow(map)) {
         tmp<-setNames(mag[,,map[i,]$emimag],map[i,]$emirem)
         tmp<-tmp*map[i,]$factor_mag2rem
-        #tmp["JPN",is.na(tmp["JPN",,]),] <- 0
-        # preliminary fix 20160111
-        #cat("Preliminary quick fix: filtering out NAs for all and negative values for almost all landuse emissions except for co2luc and n2ofertrb\n")
-        #tmp[is.na(tmp)] <- 0
-        # preliminary 20160114: filter out negative values except for co2luc and n2ofertrb
-        #if (map[i,]$emirem!="co2luc" &&  map[i,]$emirem!="n2ofertrb") {
-        # tmp[tmp<0] <- 0
-        #}
-
-        # Check for negative values, since only "co2luc" is allowed to be
-        # negative. All other emission variables are positive by definition.
-        if(map[i,]$emirem != "co2luc"){
-          if( !(all(tmp>=0)) ){
-            # Hotfix 2021-09-28: Raise warning and set negative values to zero.
-            # XXX Todo XXX: Make sure that MAgPIE is not reporting negative N2O
-            # or CH4 emissions and convert this warning into an error that
-            # breaks the model instead of setting the values to zero.
-            print(paste0("Warning: Negative values detected for '",
-                         map[i,]$emirem, "' / '", map[i,]$emimag, "'. ",
-                         "Hot fix: Set respective values to zero."))
-            tmp[tmp < 0] <- 0
-          }
-        }
-
         # Add emission variable to full dataframe
         out<-mbind(out,tmp)
     }
@@ -144,14 +114,23 @@ getReportData <- function(path_to_report,inputpath_mag="magpie",inputpath_acc="c
     filename <- paste0("./core/input/f_macBaseMagpie_coupling.cs4r")
     write.magpie(out[notGLO,,],filename)
     write(paste0("*** EOF ",filename," ***"),file=filename,append=TRUE)
+    return(out[notGLO,,])
   }
+  
   .agriculture_costs <- function(mag){
     notGLO <- getRegions(mag)[!(getRegions(mag)=="GLO")]
-    out <- mag[,,"Costs|MainSolve w/o GHG Emissions (million US$05/yr)"]/1000/1000 # with transformation factor from 10E6 US$2005 to 10E12 US$2005
+    if ("Costs Without Incentives (million US$05/yr)" %in% getNames(mag)) {
+      out <- mag[,,"Costs Without Incentives (million US$05/yr)"]/1000/1000 # with transformation factor from 10E6 US$2005 to 10E12 US$2005
+    } else {
+      out <- mag[,,"Costs|MainSolve w/o GHG Emissions (million US$05/yr)"]/1000/1000 # old reporting
+    }
     out["JPN",is.na(out["JPN",,]),] <- 0
+    tmp <- out
     dimnames(out)[[3]] <- NULL #Delete variable name to prevent it from being written into output file
     write.magpie(out[notGLO,,],paste0("./modules/26_agCosts/",inputpath_acc,"/input/p26_totLUcost_coupling.csv"),file_type="csvr")
+    return(tmp[notGLO,,])
   }
+  
   .agriculture_tradebal <- function(mag){
     notGLO <- getRegions(mag)[!(getRegions(mag)=="GLO")]
     out <- mag[,,"Trade|Agriculture|Trade Balance (billion US$2005/yr)"]/1000 # with transformation factor from 10E9 US$2005 to 10E12 US$2005
@@ -159,17 +138,18 @@ getReportData <- function(path_to_report,inputpath_mag="magpie",inputpath_acc="c
     dimnames(out)[[3]] <- NULL
     write.magpie(out[notGLO,,],paste0("./modules/26_agCosts/",inputpath_acc,"/input/trade_bal_reg.rem.csv"),file_type="csvr")
   }
-
+ 
   rep <- read.report(path_to_report,as.list=FALSE)
   if (length(getNames(rep,dim="scenario"))!=1) stop("getReportData: MAgPIE data contains more or less than 1 scenario.")
-  rep <- collapseNames(rep) # get rid of scenrio and model dimension if they exist
+  rep <- collapseNames(rep) # get rid of scenario and model dimension if they exist
   years <- 2000+5*(1:30)
   mag <- time_interpolate(rep,years)
-  .bioenergy_price(mag)
-  #.bioenergy_costs(mag) # Obsolete since bioenergy costs are not calculated by MAgPIE anymore but by integrating the supplycurve
-  .bioenergy_production(mag)
-  .emissions_mac(mag)
-  .agriculture_costs(mag)
-  # need to be updated to MAgPIE 4 interface
+  pricBio <- .bioenergy_price(mag)
+  prodBio <- .bioenergy_production(mag)
+  emi     <- .emissions_mac(mag)
+  cost    <- .agriculture_costs(mag)
+  tmp <- mbind(pricBio, prodBio, emi, cost)
+  # needs to be updated to MAgPIE 4 interface
   #.agriculture_tradebal(mag)
+  return(invisible(tmp))
 }

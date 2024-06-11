@@ -6,6 +6,7 @@
 *** |  Contact: remind@pik-potsdam.de
 *** SOF ./modules/02_welfare/utilitarian/equations.gms
 
+*' @equations
 ***---------------------------------------------------------------------------
 *' The objective of the optimization is to maximize the total discounted intertemporal utility.
 *' It is summed over all regions. 
@@ -31,14 +32,14 @@ q02_welfare(regi) ..
     / ((1 + pm_prtp(regi)) ** (pm_ttot_val(ttot) - 2005))
     * ( ( pm_pop(ttot,regi) 
         * ( ( ( ( vm_cons(ttot,regi)
-	        / pm_pop(ttot,regi)
-		)
-	     ** (1 - 1 / pm_ies(regi))
-	      - 1
-	      )
-	    / (1 - 1 / pm_ies(regi))
-	    )$( pm_ies(regi) ne 1 )
-	  + log(vm_cons(ttot,regi) / pm_pop(ttot,regi))$( pm_ies(regi) eq 1 )
+            / pm_pop(ttot,regi)
+        )
+         ** (1 - 1 / pm_ies(regi))
+          - 1
+          )
+        / (1 - 1 / pm_ies(regi))
+        )$( pm_ies(regi) ne 1 )
+      + log(vm_cons(ttot,regi) / pm_pop(ttot,regi))$( pm_ies(regi) eq 1 )
           )
         )
 $ifthen %cm_INCONV_PENALTY% == "on"
@@ -46,14 +47,17 @@ $ifthen %cm_INCONV_PENALTY% == "on"
       - v02_inconvPenCoalSolids(ttot,regi)
 $endif
 $ifthen "%cm_INCONV_PENALTY_FESwitch%" == "on"
+        !! inconvenience cost for fuel switching in FE between fossil,
+        !! biogenic, synthetic solids, liquids and gases across sectors and
+        !! emissions markets
       - sum((entySe,entyFe,te,sector,emiMkt)$(
                                     se2fe(entySe,entyFe,te)
                                 AND entyFe2Sector(entyFe,sector) 
                                 AND sector2emiMkt(sector,emiMkt) 
                                 AND (entySeBio(entySe) OR  entySeFos(entySe)) ),
           v02_NegInconvPenFeBioSwitch(ttot,regi,entySe,entyFe,sector,emiMkt)
-	+ v02_PosInconvPenFeBioSwitch(ttot,regi,entySe,entyFe,sector,emiMkt)
-	)
+    + v02_PosInconvPenFeBioSwitch(ttot,regi,entySe,entyFe,sector,emiMkt)
+    )
       / 1e3	
 $endif
       )
@@ -83,6 +87,8 @@ q02_inconvPenCoalSolids(t,regi)$(t.val > 2005)..
 ;
 $ENDIF.INCONV
 
+*' @stop
+
 *** small inconvenience penalty for increasing/decreasing biomass/synfuel use
 *** between two time steps in buildings and industry and emissison markets
 *** necessary to avoid switching behavior in sectors and emissions markets
@@ -102,6 +108,5 @@ q02_inconvPenFeBioSwitch(ttot,regi,entySe,entyFe,te,sector,emiMkt)$(
   0
 ;
 $ENDIF.INCONV_bioSwitch
-
 
 *** EOF ./modules/02_welfare/utilitarian/equations.gms

@@ -11,7 +11,7 @@ learnte_dyn80(all_te)   "learnte for nash"
 /
         wind        "wind onshore power converters"
 $IFTHEN.WindOff %cm_wind_offshore% == "1"
-	windoff     "wind offshore power converters"
+        windoff     "wind offshore power converters"
 $ENDIF.WindOff
         spv         "solar photovoltaic" 
         csp         "concentrating solar power"
@@ -21,8 +21,6 @@ $IFTHEN.WindOff %cm_wind_offshore% == "1"
         storwindoff "storage technology for wind offshore"
 $ENDIF.WindOff
         storcsp     "storage technology for csp"
-        apCarElT
-        apCarH2T
 /,
 
 solveinfo80	"Nash solution stats"
@@ -30,18 +28,28 @@ solveinfo80	"Nash solution stats"
 solvestat, modelstat, resusd, objval
 /
 
-convMessage80   "contains possible reasons for failed convergence"
+convMessage80   "contains all convergence criteria"
 /
-infes,surplus,nonopt,taxconv,anticip,target,regiTarget,implicitEnergyTarget,cm_implicitPriceTarget,cm_implicitPePriceTarget
+infes,surplus,nonopt,taxconv,anticip,target,regiTarget,implicitEnergyTarget,cm_implicitPriceTarget,cm_implicitPePriceTarget,damage,DevPriceAnticip
 /
-nash_sol_itr80  "nash iterations"
-/
-    1*10
-/    
+
+activeConvMessage80(convMessage80)   "all active convergence criterias" / /
 ;
 
 teLearn(learnte_dyn80)   = YES;
 
+activeConvMessage80("infes") = YES;
+activeConvMessage80("surplus") = YES;
+activeConvMessage80("nonopt") = YES;
+if (cm_TaxConvCheck eq 1, activeConvMessage80("taxconv") = YES;);
+***activeConvMessage80("anticip") = YES;
+activeConvMessage80("target") = YES;
+activeConvMessage80("DevPriceAnticip") = YES;
+$if not "%cm_emiMktTarget%" == "off" activeConvMessage80("regiTarget") = YES;
+$if not "%cm_implicitQttyTarget%" == "off" activeConvMessage80("implicitEnergyTarget") = YES;
+$if not "%cm_implicitPriceTarget%" == "off" activeConvMessage80("cm_implicitPriceTarget") = YES;
+$if not "%cm_implicitPePriceTarget%" == "off" activeConvMessage80("cm_implicitPePriceTarget") = YES;
+$if not "%internalizeDamages%" == "off" activeConvMessage80("damage") = YES;
 
 display teLearn;
 *** EOF ./modules/80_optimization/nash/sets.gms

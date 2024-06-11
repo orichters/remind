@@ -6,6 +6,8 @@
 *** |  Contact: remind@pik-potsdam.de
 *** SOF ./modules/37_industry/fixed_shares/equations.gms
 
+*' @equations
+
 ***---------------------------------------------------------------------------
 *'  Industry Final Energy Balance
 ***---------------------------------------------------------------------------
@@ -25,16 +27,15 @@ q37_demFeIndst(ttot,regi,entyFe,emiMkt)$((ttot.val ge cm_startyear) AND (entyFe2
 *' industry subsector are calculated from final energy use in industry, the 
 *' subsectors' shares in that final energy carriers use, and the emission 
 *' factor the final energy carrier. 
-q37_macBaseInd(ttot,regi,entyFE,secInd37)$( ttot.val ge cm_startyear  ) .. 
-  vm_macBaseInd(ttot,regi,entyFE,secInd37)
+q37_emiIndBase(ttot,regi,entyFe,secInd37)$( ttot.val ge cm_startyear  ) .. 
+  vm_emiIndBase(ttot,regi,entyFe,secInd37)
   =e=
-    sum((fe2ppfEn(entyFE,in),ces_industry_dyn37("enhi",in))$(entyFeCC37(entyFe)),
+    sum((fe2ppfEn(entyFe,in),ces_industry_dyn37("enhi",in))$(entyFeCC37(entyFe)),
       ( vm_cesIO(ttot,regi,in) + pm_cesdata(ttot,regi,in,"offset_quantity") )
     * p37_shIndFE(regi,in,secInd37)
     * sum((entySe,te)$(se2fe(entySe,entyFe,te) and entySeFos(entySe)), pm_emifac(ttot,regi,entySe,entyFe,te,"co2"))
   )
 ;
-
 
 *' The maximum abatable emissions of a given type (industry subsector, fuel or
 *' process) are calculated from the baseline emissions and the possible 
@@ -43,11 +44,11 @@ q37_emiIndCCSmax(ttot,regi,emiInd37)$( ttot.val ge cm_startyear ) ..
   v37_emiIndCCSmax(ttot,regi,emiInd37)
   =e=
     sum(emiMac2mac(emiInd37,macInd37),
-      ( sum((secInd37_2_emiInd37(secInd37,emiInd37),entyFE),
-          vm_macBaseInd(ttot,regi,entyFE,secInd37)
+      ( sum((secInd37_2_emiInd37(secInd37,emiInd37),entyFe),
+          vm_emiIndBase(ttot,regi,entyFe,secInd37)
         )$( NOT sameas(emiInd37,"co2cement_process") )
       + (
-          vm_macBaseInd(ttot,regi,"co2cement_process","cement")
+          vm_emiIndBase(ttot,regi,"co2cement_process","cement")
         )$( sameas(emiInd37,"co2cement_process") )
       )
     * pm_macSwitch(macInd37)
@@ -102,7 +103,7 @@ q37_cementCCS(ttot,regi)$( ttot.val ge cm_startyear
 *' ```
 *' vm_emiIndCCS = 
 *'     0.001
-*'   * vm_macBaseInd
+*'   * vm_emiIndBase
 *'   * sm_dmac
 *'   * ( 32 * 0.3
 *'     - ( 15 * 0
@@ -118,10 +119,10 @@ q37_IndCCSCost(ttot,regi,emiInd37)$( ttot.val ge cm_startyear ) ..
     1e-3
   * pm_macSwitch(emiInd37)
   * ( sum((enty,secInd37_2_emiInd37(secInd37,emiInd37)),
-        vm_macBaseInd(ttot,regi,enty,secInd37)
+        vm_emiIndBase(ttot,regi,enty,secInd37)
       )$( NOT sameas(emiInd37,"co2cement_process") )
     + (
-        vm_macBaseInd(ttot,regi,"co2cement_process","cement")
+        vm_emiIndBase(ttot,regi,"co2cement_process","cement")
       )$( sameas(emiInd37,"co2cement_process") )
     )
   * sm_dmac
@@ -189,6 +190,8 @@ q37_costCESmarkup(t,regi,in)$(ppfen_CESMkup_dyn37(in))..
   =e=
   p37_CESMkup(t,regi,in)*(vm_cesIO(t,regi,in) + pm_cesdata(t,regi,in,"offset_quantity"))
 ;
+
+*' @stop
 
 *** EOF ./modules/37_industry/fixed_shares/equations.gms
 

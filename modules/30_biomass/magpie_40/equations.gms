@@ -25,7 +25,7 @@ q30_costFuBio(ttot,regi)$(ttot.val ge cm_startyear)..
          +
 $if %cm_MAgPIE_coupling% == "on"  (v30_pebiolc_costs(ttot,regi) * v30_multcost(ttot,regi))
 $if %cm_MAgPIE_coupling% == "off" (v30_pebiolc_costs(ttot,regi))
-         - p30_pebiolc_costs_emu_preloop(ttot,regi) !! Need to be substracted since they are also inculded in the total agricultural production costs
+         - p30_pebiolc_costs_emu_preloop(ttot,regi) !! Need to be substracted since they are also included in the total agricultural production costs
          + 
          sum(peren2cont30(enty,rlf), vm_fuExtr(ttot,regi,enty,rlf) * pm_costsTradePeFinancial(regi,"use",enty));
 
@@ -111,7 +111,7 @@ q30_limitXpBio(t,regi)..
 ;
 
 *** Limit BECCS in policy runs to 35% of total PE in BAU or to 130% of bioenergy demand in BAU
-q30_limitTeBio(t,regi)$(cm_emiscen ne 1)..
+q30_limitTeBio(t,regi)$(cm_startyear gt 2005)..
         sum(pe2se(enty,enty2,teBio)$(teCCS(teBio)), vm_demPe(t,regi,enty,enty2,teBio))
         =l=
         0.5 * p30_demPe(t,regi);
@@ -126,5 +126,6 @@ q30_BioPEProdTotal(t,regi)..
           vm_fuExtr(t,regi,enty,rlf))
 ;
 
+*' @stop
 
 *** EOF ./modules/30_biomass/magpie_40/equations.gms

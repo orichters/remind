@@ -14,84 +14,63 @@ Parameter f21_tau_fe_tax(tall,all_regi,emi_sectors,all_enty) "2005 final energy 
 $ondelim
 $include "./modules/21_tax/on/input/f21_tau_fe_tax.cs4r"
 $offdelim
-  /             ;
+  /
+;
 Parameter f21_tau_fe_sub(tall,all_regi,emi_sectors,all_enty) "2005 final energy subsidy"
   /
 $ondelim
 $include "./modules/21_tax/on/input/f21_tau_fe_sub.cs4r"
 $offdelim
-  /             ;
-  
+  /
+;
 Parameter f21_tau_fuEx_sub(tall,all_regi,all_enty) "2005 subsidy for fuel extraction"
   /
 $ondelim
 $include "./modules/21_tax/on/input/f21_tau_pe_sub.cs4r"
 $offdelim
-  /             ;
-
+  /
+;
 Parameter f21_tax_convergence(tall,all_regi,all_enty) "Tax convergence level for specific regions, year and final energy type"
   /
 $ondelim
 $include "./modules/21_tax/on/input/f21_tax_convergence.cs4r"
 $offdelim
-  /             ;
- 
+  /
+;
 Parameter f21_max_fe_sub(tall,all_regi,all_enty) "maximum final energy subsidy levels (in $/Gj) from REMIND version prior to rev. 5429"
   /
 $ondelim
 $include "./modules/21_tax/on/input/f21_max_fe_sub.cs4r"
 $offdelim
-  /             ;
-
+  /
+;
 Parameter f21_max_pe_sub(tall,all_regi,all_enty) "maximum primary energy subsidy levels (in $/Gj) to provide plausible upper bound: 40$/barrel ~ 8 $/GJ" 
   /
 $ondelim
 $include "./modules/21_tax/on/input/f21_max_pe_sub.cs4r"
 $offdelim
-  /             ;
-
+  /
+;
 Parameter f21_prop_fe_sub(tall,all_regi,all_enty) "subsidy proportional cap to avoid liquids increasing dramatically"
   /
 $ondelim
 $include "./modules/21_tax/on/input/f21_prop_fe_sub.cs4r"
 $offdelim
-  /             ;  
-  
-
-
-*** -------------------------Technology specific subsidies and taxes for new capacity--------------------------
-*** initialize subsidies and taxes to zero
-p21_tech_tax(t,regi,te,rlf) = 0;
-p21_tech_sub(t,regi,te,rlf) = 0;
-
-$ifthen.vehiclesSubsidies not "%cm_vehiclesSubsidies%" == "off"
-
-Parameter f21_tech_sub(tall,all_regi,all_te) "subsidy path for transport specific new capacity (BEV and FCEV)"
   /
-$ondelim
-$include "./modules/21_tax/on/input/f21_vehiclesSubsidies.cs4r"
-$offdelim
-  /; 
+;
 
-  p21_tech_sub(t,regi,te,"1")$(f21_tech_sub(t,regi,te)) = - f21_tech_sub("2020",regi,te);
-
-  display p21_tech_sub;
-
-$endIf.vehiclesSubsidies
-
-  
 *** transfer data to parameters and rescaling of FE parameters from $/GJ to trillion $ / TWa (subsidies also get adjusted in preloop.gms to avoid neg. prices)
 
-  pm_tau_fe_tax(ttot,all_regi,emi_sectors,entyFe)$f21_tau_fe_tax(ttot,all_regi,emi_sectors,entyFe) = f21_tau_fe_tax(ttot,all_regi,emi_sectors,entyFe)*0.001/sm_EJ_2_TWa;
-  pm_tau_fe_sub(ttot,all_regi,emi_sectors,entyFe)$f21_tau_fe_sub(ttot,all_regi,emi_sectors,entyFe) = f21_tau_fe_sub(ttot,all_regi,emi_sectors,entyFe)*0.001/sm_EJ_2_TWa;
-  p21_tau_fuEx_sub(ttot,regi,entyPE)$f21_tau_fuEx_sub(ttot,regi,entyPE) = f21_tau_fuEx_sub(ttot,regi,entyPE)*0.001/sm_EJ_2_TWa;
+  p21_tau_fe_tax(ttot,all_regi,emi_sectors,entyFe)$f21_tau_fe_tax(ttot,all_regi,emi_sectors,entyFe) = f21_tau_fe_tax(ttot,all_regi,emi_sectors,entyFe)*0.001/sm_EJ_2_TWa;
+  p21_tau_fe_sub(ttot,all_regi,emi_sectors,entyFe)$f21_tau_fe_sub(ttot,all_regi,emi_sectors,entyFe) = f21_tau_fe_sub(ttot,all_regi,emi_sectors,entyFe)*0.001/sm_EJ_2_TWa;
+  p21_tau_fuEx_sub(ttot,regi,entyPe)$f21_tau_fuEx_sub(ttot,regi,entyPe) = f21_tau_fuEx_sub(ttot,regi,entyPe)*0.001/sm_EJ_2_TWa;
 
   p21_max_fe_sub(ttot,all_regi,entyFe)$f21_max_fe_sub(ttot,all_regi,entyFe) = f21_max_fe_sub(ttot,all_regi,entyFe)*0.001/sm_EJ_2_TWa;
   p21_prop_fe_sub(ttot,all_regi,entyFe)$f21_prop_fe_sub(ttot,all_regi,entyFe) = f21_prop_fe_sub(ttot,all_regi,entyFe);
 
 if(cm_fetaxscen eq 0,
-  pm_tau_fe_tax(ttot,all_regi,emi_sectors,entyFe) = 0;
-  pm_tau_fe_sub(ttot,all_regi,emi_sectors,entyFe) = 0;
+  p21_tau_fe_tax(ttot,all_regi,emi_sectors,entyFe) = 0;
+  p21_tau_fe_sub(ttot,all_regi,emi_sectors,entyFe) = 0;
   p21_tau_fuEx_sub(ttot,regi,all_enty) = 0;
 );
 
@@ -126,6 +105,16 @@ p21_tau_pe2se_tax(ttot,regi,te)$(ttot.val ge 2005)    = p21_tau_pe2se_tax(ttot,r
 p21_tau_pe2se_sub(ttot,regi,te)$(ttot.val ge 2005)    = p21_tau_pe2se_sub(ttot,regi,te)    * 0.001 / sm_EJ_2_TWa;
 p21_tau_pe2se_inconv(ttot,regi,te)$(ttot.val ge 2005) = p21_tau_pe2se_inconv(ttot,regi,te) * 0.001 / sm_EJ_2_TWa;
 
+*** SE electricity tax rate tech specific ramp up logistic function parameters
+p21_tau_SE_tax_rampup(t,regi,te,teSeTax_coeff) = 0;
+$ifThen.SEtaxRampUpParam not "%cm_SEtaxRampUpParam%" == "off" 
+  loop((ext_regi,te,teSeTax_coeff)$p21_SEtaxRampUpParameters(ext_regi,te,teSeTax_coeff),
+    loop(regi$regi_groupExt(ext_regi,regi),
+      p21_tau_SE_tax_rampup(t,regi,te,teSeTax_coeff) = p21_SEtaxRampUpParameters(ext_regi,te,teSeTax_coeff);
+    );
+  );
+$endif.SEtaxRampUpParam
+
 ***cb 20110923 load paths for ressource export taxes
 ***cb* file for resource export taxes, not used in default settings
 Parameter p21_tau_xpres_tax(tall,all_regi,all_enty) "tax path for ressource export"
@@ -139,27 +128,6 @@ p21_tau_xpres_tax(ttot,regi,"peoil")$(ttot.val ge 2005) = p21_tau_xpres_tax(ttot
 *LB* use 0 for all regions as default
 p21_tau_xpres_tax(ttot,regi,all_enty) = 0;
 
-
-*** --------------------
-*** CO2 prices
-*** --------------------    
-*IM* for tax case: future CO2-tax paths are given in different module/45_carbonprice realizations
-*RP* historic (2010, 2015) CO2 prices are defined here
-parameter f21_taxCO2eqHist(ttot,all_regi)        "historic CO2 prices ($/tCO2)"
-/
-$ondelim
-$include "./modules/21_tax/on/input/pm_taxCO2eqHist.cs4r"
-$offdelim
-/
-;
-
-** Fixing European 2020 carbon price to 20€/t CO2 (other regions to zero)
-f21_taxCO2eqHist("2020",regi) = 0;
-f21_taxCO2eqHist("2020",regi)$(regi_group("EUR_regi",regi)) =  20;
-
-*** convert from $/tCO2 to T$/GtC
-pm_taxCO2eqHist(t,regi) = f21_taxCO2eqHist(t,regi) * sm_DptCO2_2_TDpGtC;
-
 *JeS for SO2 tax case: tax path in 10^12$/TgS (= 10^6 $/t S) @ GDP/cap of 1000$/cap  (value gets scaled by GDP/cap)
 if((cm_so2tax_scen eq 0),
 s21_so2_tax_2010=0.0;
@@ -172,7 +140,6 @@ s21_so2_tax_2010=0.0006;   !! This tax level leads to 6000$/t S  @10,000$/cap
 elseif(cm_so2tax_scen eq 4),
 s21_so2_tax_2010=0.000144;
 );
-
 
 *** Implicit discount rates mark-ups over the normal discount rate
 if ((cm_DiscRateScen eq 0),
@@ -225,12 +192,12 @@ elseif (cm_DiscRateScen eq 4),
 *** works only on PEs at the moment as implementation requires pm_pvp
 *** which is only available for the commodities of the nash markets
 *** zero by default
-p21_tau_Import(t,regi,tradePe) = 0;
+p21_tau_Import(t,regi,tradePe,tax_import_type_21) = 0;
 *** read in import tax values from switch cm_import_tax
 $ifThen.import not "%cm_import_tax%" == "off" 
-loop((ext_regi,tradePe)$(p21_import_tax(ext_regi,tradePe)),
+loop((ext_regi,tradePe,tax_import_type_21)$(p21_import_tax(ext_regi,tradePe,tax_import_type_21)),
   loop(regi$regi_groupExt(ext_regi,regi),
-    p21_tau_Import(t,regi,tradePe) =  p21_import_tax(ext_regi,tradePe)
+    p21_tau_Import(t,regi,tradePe,tax_import_type_21) =  p21_import_tax(ext_regi,tradePe,tax_import_type_21)
   );
 );
 $endif.import
@@ -262,5 +229,15 @@ pm_tau_ces_tax(ttot,regi,all_in) = 0;
 p21_bio_EF(ttot,all_regi) = 0;
 p21_bio_EF(ttot,regi_bio_EFTax21) = cm_bioenergy_EF_for_tax * (1/1000 * 12/44) / (sm_EJ_2_TWa);
 
+*** Read in direct investments into renewables from reference scenario
+$ifthen.importtaxrc %cm_taxrc_RE% == "REdirect"
+Execute_Loadpoint 'input_ref' p21_ref_costInvTeDir_RE = vm_costInvTeDir.l;
+Execute_Loadpoint 'input_ref' p21_ref_costInvTeAdj_RE = vm_costInvTeAdj.l;
+$endif.importtaxrc
+
+if (cm_startyear gt 2005,
+execute_load "input_ref.gdx", pm_taxrevCO2LUC0;
+execute_load "input_ref.gdx", pm_taxrevGHG0;
+);
 
 *** EOF ./modules/21_tax/on/datainput.gms
