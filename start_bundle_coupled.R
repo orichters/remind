@@ -654,7 +654,7 @@ for (scen in common) {
       } else {
         lockID <- gms::model_lock(folder = file.path("scripts", "multiplayer"), file = ".lock")
         multiplayersh <- file.path("scripts", "multiplayer", "slurmjobs.sh")
-        write(slurm_command, file = multiplayersh, append = TRUE)
+        write(slurmCommand, file = multiplayersh, append = TRUE)
         message("Run not started, but written to ", multiplayersh)
         gms::model_unlock(lockID)
       }
@@ -682,7 +682,7 @@ message("- ", length(startedRuns), " runs started: ", paste(startedRuns, collaps
 message("- ", length(waitingRuns), " runs are waiting: ", paste(waitingRuns, collapse = ", "))
 message("- qos statistics: ", paste0(names(qosRuns), ": ", unlist(qosRuns), collapse = ", "), ".",
         if (isTRUE(qosRuns[["priority"]] > 4)) " More than 4 runs with qos=priority. They may not be able to run in parallel on the PIK cluster.")
-if (file.exists("/p") && isTRUE(qosRuns[["multiplayer"]] > 0)) {
+if (file.exists("/p") && isTRUE(qosRuns[["multiplayer"]] > 0) && ! any(c("--test", "--gamscompile") %in% flags)) {
   startfile <- file.path("scripts", "multiplayer", "start.R")
   message("Some runs use multiplayer mode. Ask your colleagues to run 'Rscript ", startfile, "' in this folder.")
   message("This creates a recurrent slurm job that starts the runs for which no free priority slot was available.")
