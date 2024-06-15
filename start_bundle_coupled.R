@@ -85,10 +85,10 @@ max_iterations <- 5
 n600_iterations <- 0 # max_iterations
 
 # Use this qos if none is specified in config file. "auto" means use "priority" slot if available, else "short"
-qos_default <- "auto"
+qos_default <- "multiplayer"
 
 # run a compareScenario for each scenario comparing all rem-x: Choose qos (short, priority) or set to FALSE
-run_compareScenarios <- "short"
+run_compareScenarios <- FALSE
 
 # use an empty magpie model (just reproduces the latest AMT results)
 magpie_empty <- FALSE
@@ -654,7 +654,7 @@ for (scen in common) {
       } else {
         lockID <- gms::model_lock(folder = file.path("scripts", "multiplayer"), file = ".lock")
         multiplayersh <- file.path("scripts", "multiplayer", "slurmjobs.sh")
-        write(slurm_command, file = multiplayersh, append = TRUE)
+        write(slurmCommand, file = multiplayersh, append = TRUE)
         message("Run not started, but written to ", multiplayersh)
         gms::model_unlock(lockID)
       }
