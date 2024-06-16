@@ -1,10 +1,10 @@
 title;start;copyConfigFrom;oldrun;path_report;qos;magpie_scen;no_ghgprices_land_until;.cm_nash_autoconverge_lastrun;path_gdx;path_gdx_ref;path_gdx_bau
 SSP2-Base;;;SSP2-Base;;;SSP2|NPI|nocc_hist|rcp4p5;y2150;;;;
 h_cpol_noUkr;NGFS;;h_cpol;;;SSP2|NPI|nocc_hist|rcp4p5;y2150;2;;;
-h_cpol;NGFS;;h_cpol;;;SSP2|NPI|nocc_hist|rcp4p5;y2150;2;;;
-h_ndc;NGFS;;h_ndc;;;SSP2|NDC|nocc_hist|rcp4p5;y2150;2;;;
-o_1p5c;NGFS;;o_1p5c;;;SSP2|NDC|nocc_hist|rcp1p9;y2030;2;;;
-o_2c;NGFS;;o_2c;;;SSP2|NDC|nocc_hist|rcp2p6;y2030;2;;;
+h_cpol;NGFS;;h_cpol;;;SSP2|NPI|nocc_hist|rcp4p5;y2150;2;/p/tmp/lavinia/MO/test_2005GDPaPOPaSSP2_2024_06_15/remind/output/SSP2-NPi_2024-06-15_14.27.37/fulldata.gdx;/p/tmp/lavinia/MO/test_2005GDPaPOPaSSP2_2024_06_15/remind/output/SSP2-NPi_2024-06-15_14.27.37/fulldata.gdx;
+h_ndc;NGFS;;h_ndc;;;SSP2|NDC|nocc_hist|rcp4p5;y2150;2;/p/tmp/lavinia/MO/test_2005GDPaPOPaSSP2_2024_06_15/remind/output/SSP2-NPi_2024-06-15_14.27.37/fulldata.gdx;/p/tmp/lavinia/MO/test_2005GDPaPOPaSSP2_2024_06_15/remind/output/SSP2-NPi_2024-06-15_14.27.37/fulldata.gdx;/p/tmp/lavinia/MO/test_2005GDPaPOPaSSP2_2024_06_15/remind/output/SSP2-NPi_2024-06-15_14.27.37/fulldata.gdx
+o_1p5c;NGFS;;o_1p5c;;;SSP2|NDC|nocc_hist|rcp1p9;y2030;2;/p/tmp/lavinia/MO/test_2005GDPaPOPaSSP2_2024_06_15/remind/output/SSP2-NPi_2024-06-15_14.27.37/fulldata.gdx;/p/tmp/lavinia/MO/test_2005GDPaPOPaSSP2_2024_06_15/remind/output/SSP2-NPi_2024-06-15_14.27.37/fulldata.gdx;
+o_2c;NGFS;;o_2c;;;SSP2|NDC|nocc_hist|rcp2p6;y2030;2;/p/tmp/lavinia/MO/test_2005GDPaPOPaSSP2_2024_06_15/remind/output/SSP2-NPi_2024-06-15_14.27.37/fulldata.gdx;/p/tmp/lavinia/MO/test_2005GDPaPOPaSSP2_2024_06_15/remind/output/SSP2-NPi_2024-06-15_14.27.37/fulldata.gdx;
 o_lowdem;NGFS;;o_lowdem;;;SSP2|NDC|nocc_hist|rcp1p9|NGFS_o_lowdem;y2030;2;;;
 d_delfrag;NGFS;;d_delfrag;;;SSP2|NDC|nocc_hist|rcp2p6;y2030;2;;;
 d_strain;NGFS;;d_strain;;;SSP2|NDC|nocc_hist|rcp4p5;y2030;2;;;
