@@ -58,7 +58,7 @@ if (! dir.exists(path_magpie)) path_magpie <- normalizePath(file.path(getwd(), "
 # path_settings_remind contains the detailed configuration of the REMIND scenarios
 # path_settings_coupled defines which runs will be started, coupling infos, and optimal gdx and report information that overrides path_settings_remind
 # these settings will be overwritten if you provide the path to the coupled file as first command line argument
-path_settings_coupled <- file.path(path_remind, "config", "scenario_config_coupled.csv")
+path_settings_coupled <- file.path(path_remind, "config", "scenario_config_coupled_NGFS_v5.csv")
 path_settings_remind  <- sub("scenario_config_coupled", "scenario_config", path_settings_coupled)
                          # file.path(path_remind, "config", "scenario_config.csv")
 
@@ -69,8 +69,8 @@ prefix_runname <- "C_"
 # If there are existing runs you would like to take the gdxes (REMIND) or reportings (REMIND or MAgPIE) from, provide the path here and the name prefix below.
 # Note: the scenario names of the old runs have to be identical to the runs that are to be started. If they differ please provide the names of the old scenarios in the
 # file that you specified on path_settings_coupled (scenario_config_coupled_xxx.csv).
-path_remind_oldruns <- file.path(path_remind, "output")
-path_magpie_oldruns <- file.path(path_magpie, "output")
+path_remind_oldruns <- file.path("../remind-2024-06-14-oldrenv", "output")
+path_magpie_oldruns <- file.path("../remind-2024-06-14-oldrenv/magpie", "output")
 
 # If you want the script to find gdxs or reports of older runs as starting point for new runs please
 # provide the prefix of the old run names so the script can find them.
@@ -88,7 +88,7 @@ n600_iterations <- 0 # max_iterations
 qos_default <- "auto"
 
 # run a compareScenario for each scenario comparing all rem-x: Choose qos (short, priority) or set to FALSE
-run_compareScenarios <- "short"
+run_compareScenarios <- FALSE
 
 # use an empty magpie model (just reproduces the latest AMT results)
 magpie_empty <- FALSE
@@ -120,7 +120,7 @@ blue  <- "\033[0;34m"
 NC    <- "\033[0m"   # No Color
 
 # define arguments that are accepted (test for backward compatibility)
-startgroup <- "1"
+startgroup <- "NGFS"
 flags <- lucode2::readArgs("startgroup", .flags = c(h = "--help", g = "--gamscompile", i = "--interactive", t = "--test"))
 if (! exists("argv")) argv <- commandArgs(trailingOnly = TRUE)
 if ("--help" %in% flags) {
@@ -633,19 +633,30 @@ for (scen in common) {
       logfile <- file.path("output", fullrunname, paste0("log", if (scenarios_coupled[scen, "start_magpie"]) "-mag", ".txt"))
       if (! file.exists(dirname(logfile))) dir.create(dirname(logfile))
       message("Find logging in ", logfile)
-      if (isTRUE(runEnv$qos == "auto")) {
+      starthere <- TRUE
+      if (isTRUE(runEnv$qos %in% c("auto", "multiplayer"))) {
         sq <- system(paste0("squeue -u ", Sys.info()[["user"]], " -o '%q %j'"), intern = TRUE)
-        runEnv$qos <- if (is.null(attr(sq, "status")) && sum(grepl("^priority ", sq)) < 4) "priority" else "short"
+        starthereprio <- is.null(attr(sq, "status")) && sum(grepl("^priority ", sq)) < 4
+        starthere <- runEnv$qos == "auto" || starthereprio
+        runEnv$qos <- if (starthereprio || runEnv$qos == "multiplayer") "priority" else "short"
       }
       slurmOptions <- combine_slurmConfig(paste0("--qos=", runEnv$qos, " --job-name=", fullrunname, " --output=", logfile,
         " --open-mode=append --mail-type=END --comment=REMIND-MAgPIE --tasks-per-node=", runEnv$numberOfTasks,
         if (runEnv$numberOfTasks == 1) " --mem=8000"), runEnv$sbatch)
       slurmCommand <- paste0("sbatch ", slurmOptions, " --wrap=\"Rscript start_coupled.R coupled_config=", Rdatafile, "\"")
       message(slurmCommand)
-      exitCode <- system(slurmCommand)
-      if (0 < exitCode) {
-        errorsfound <- errorsfound + 1
-        message("sbatch command failed, check logs.")
+      if (starthere) {
+        exitCode <- system(slurmCommand)
+        if (0 < exitCode) {
+          errorsfound <- errorsfound + 1
+          message("sbatch command failed, check logs.")
+        }
+      } else {
+        lockID <- gms::model_lock(folder = file.path("scripts", "multiplayer"), file = ".lock")
+        multiplayersh <- file.path("scripts", "multiplayer", "slurmjobs.sh")
+        write(slurmCommand, file = multiplayersh, append = TRUE)
+        message("Run not started, but written to ", multiplayersh)
+        gms::model_unlock(lockID)
       }
     }
   }
@@ -671,6 +682,15 @@ message("- ", length(startedRuns), " runs started: ", paste(startedRuns, collaps
 message("- ", length(waitingRuns), " runs are waiting: ", paste(waitingRuns, collapse = ", "))
 message("- qos statistics: ", paste0(names(qosRuns), ": ", unlist(qosRuns), collapse = ", "), ".",
         if (isTRUE(qosRuns[["priority"]] > 4)) " More than 4 runs with qos=priority. They may not be able to run in parallel on the PIK cluster.")
+if (file.exists("/p") && isTRUE(qosRuns[["multiplayer"]] > 0)) {
+  startfile <- file.path("scripts", "multiplayer", "start.R")
+  message("Some runs use multiplayer mode. Ask your colleagues to run 'Rscript ", startfile, "' in this folder.")
+  message("This creates a recurrent slurm job that starts the runs for which no free priority slot was available.")
+  message("Terminate all these multiplayer jobs by deleting the file 'scripts/multiplayer/slurmjobs.sh'.")
+  message("Starting such a job for you as well to use all 'priority' slots to guarantee that the cascades finishes even if nobody wants to help you.")
+  system(paste("Rscript", startfile)) # better than source to avoid changes in working directory etc
+}
+
 # make sure we have a non-zero exit status if there were any errors
 if (0 < errorsfound) {
   stop(red, errorsfound, NC, " errors were identified, check logs above for details.")
