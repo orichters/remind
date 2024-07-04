@@ -255,26 +255,38 @@ start_coupled <- function(path_remind, path_magpie, cfg_rem, cfg_mag, runname, m
         message("Starting subsequent run ", run)
         logfile <- file.path("output", subseq.env$fullrunname, "log.txt")
         if (! file.exists(dirname(logfile))) dir.create(dirname(logfile))
-        if (isTRUE(subseq.env$qos == "auto")) {
+        starthere <- TRUE
+        if (isTRUE(subseq.env$qos %in% c("auto", "multiplayer"))) {
           sq <- system(paste0("squeue -u ", Sys.info()[["user"]], " -o '%q %j' | grep -v ", fullrunname), intern = TRUE)
-          subseq.env$qos <- if (is.null(attr(sq, "status")) && sum(grepl("^priority ", sq)) < 4) "priority" else "short"
+          starthereprio <- is.null(attr(sq, "status")) && sum(grepl("^priority ", sq)) < 4
+          starthere <- subseq.env$qos == "auto" || starthereprio
+          subseq.env$qos <- if (starthereprio || subseq.env$qos == "multiplayer") "priority" else "short"
         }
         slurmOptions <- combine_slurmConfig(paste0("--qos=", subseq.env$qos, " --job-name=", subseq.env$fullrunname, " --output=", logfile,
            " --open-mode=append --mail-type=END --comment=REMIND-MAgPIE --tasks-per-node=", subseq.env$numberOfTasks,
           if (subseq.env$numberOfTasks == 1) " --mem=8000"), subseq.env$sbatch)
         subsequentcommand <- paste0("sbatch ", slurmOptions, " --wrap=\"Rscript start_coupled.R coupled_config=", RData_file, "\"")
         message(subsequentcommand)
+
         if (length(needfulldatagdx) > 0) {
-          exitCode <- system(subsequentcommand)
-          if (0 < exitCode) {
-            message("sbatch command failed, check logs")
-            errorsfound <- errorsfound + 1
-            # if sbatch has the --wait argument, the user is likely interactively
-            # waiting for the result of the run (like in a test). In that case,
-            # fail immediately so that the user knows about the failure asap.
-            if(grepl("--wait", subsequentcommand)) {
-              stop("You seem to be waiting for ", subseq.env$fullrunname, " to finish but the sbatch command failed")
+          if (starthere) {
+            exitCode <- system(subsequentcommand)
+            if (0 < exitCode) {
+              message("sbatch command failed, check logs")
+              errorsfound <- errorsfound + 1
+              # if sbatch has the --wait argument, the user is likely interactively
+              # waiting for the result of the run (like in a test). In that case,
+              # fail immediately so that the user knows about the failure asap.
+              if(grepl("--wait", subsequentcommand)) {
+                stop("You seem to be waiting for ", subseq.env$fullrunname, " to finish but the sbatch command failed")
+              }
             }
+          } else {
+            lockID <- gms::model_lock(folder = file.path("scripts", "multiplayer"), file = ".lock")
+            multiplayersh <- file.path("scripts", "multiplayer", "slurmjobs.sh")
+            write(subsequentcommand, file = multiplayersh, append = TRUE)
+            message("Subsequent run not started, but written to ", multiplayersh)
+            gms::model_unlock(lockID)
           }
         } else {
           message(RData_file, " already contained a gdx for this run. To avoid runs to be started twice, I'm not starting it. You can start it by running the command directly above.")
