@@ -69,15 +69,15 @@ prefix_runname <- "C_"
 # If there are existing runs you would like to take the gdxes (REMIND) or reportings (REMIND or MAgPIE) from, provide the path here and the name prefix below.
 # Note: the scenario names of the old runs have to be identical to the runs that are to be started. If they differ please provide the names of the old scenarios in the
 # file that you specified on path_settings_coupled (scenario_config_coupled_xxx.csv).
-path_remind_oldruns <- file.path("../remind-2024-06-14-oldrenv", "output")
-path_magpie_oldruns <- file.path("../remind-2024-06-14-oldrenv/magpie", "output")
+path_remind_oldruns <- file.path("../remind-3p3p1", "output")
+path_magpie_oldruns <- file.path("../remind-3p3p1/magpie", "output")
 
 # If you want the script to find gdxs or reports of older runs as starting point for new runs please
 # provide the prefix of the old run names so the script can find them.
 prefix_oldruns <-  "C_"
 
 # number of coupling iterations, can also be specified in path_settings_coupled
-max_iterations <- 5
+max_iterations <- 3
 
 # Number of coupling iterations (before final iteration) in which MAgPIE uses higher n600 resolution.
 # Until "max_iterations - n600_iterations" iteration MAgPIE runs with n200 resolution.
