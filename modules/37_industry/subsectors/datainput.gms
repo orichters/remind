@@ -8,6 +8,8 @@
 
 vm_emiIndBase.l(ttot,regi,entyFe,secInd37) = 0;
 
+vm_incinerationCCS.l(ttot,regi,entySe,entyFe,emiMkt) = 0;
+
 Parameters
 
 *** ---------------------------------------------------------------------------
