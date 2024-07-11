@@ -12,9 +12,6 @@ require(gdxrrw)
 require(quitte)
 igdx(system("dirname $( which gams )", intern = TRUE))
 
-#beta1 <- read.csv("../../modules/50_damages/KotzWenz/input/PERC_scaling_coefs_ssp2_ssp585_lagdiff_lintren_fix_spec_NL_8_9_10_movfix_30_Nboot1000_beta1.csv") %>% select(-"X")
-#beta2 <- read.csv("../../modules/50_damages/KotzWenz/input/PERC_scaling_coefs_ssp2_ssp585_lagdiff_lintren_fix_spec_NL_8_9_10_movfix_30_Nboot1000_beta2.csv") %>% select(-"X")
-#maxtemp <- read.csv("../../modules/50_damages/KotzWenz/input/PERC_scaling_coefs_ssp2_ssp585_lagdiff_lintren_fix_spec_NL_8_9_10_movfix_30_Nboot1000_maxGMT.csv") %>% select(-"X")
 beta1 <- read.csv("../../modules/50_damages/KotzWenz/input/f50_KLW_df_beta1.cs4r",skip=4,header=FALSE) %>% rename(iso=V1,realization=V2,value=V3)
 beta2 <- read.csv("../../modules/50_damages/KotzWenz/input/f50_KLW_df_beta2.cs4r",skip=4,header=FALSE) %>% rename(iso=V1,realization=V2,value=V3)
 maxtemp <- read.csv("../../modules/50_damages/KotzWenz/input/f50_KLW_df_maxGMT.cs4r",skip=4,header=FALSE) %>% rename(iso=V1,realization=V2,value=V3)
@@ -30,6 +27,9 @@ maxtemp <- read.csv("../../modules/50_damages/KotzWenz/input/f50_KLW_df_maxGMT.c
 #}
 getTemperatureMagicc = function(file="./p15_magicc_temp.gdx"){
   x <- read.gdx("p15_magicc_temp.gdx","pm_globalMeanTemperature") %>% rename(period=tall)
+  if(max(x$period) == 2100){
+    x <- rbind(x,tibble(period= seq(2101,2300,1),value=subset(x,period == 2100)$value))
+  }
   # Get relevant years
   return(subset(x,period >= 2005 & period <= 2300))	
 }
