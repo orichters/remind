@@ -1,0 +1,20 @@
+name,type,reason
+sm_c_2_co2,input,added by codeCheck
+cm_peakBudgYr,input,added by codeCheck
+vm_co2eq,input,added by codeCheck
+vm_emiFgas,input,added by codeCheck
+vm_demFeSector,input,added by codeCheck
+pm_emifac,input,added by codeCheck
+pm_globalMeanTemperature,input,added by codeCheck
+pm_temperatureImpulseResponseCO2,input,added by codeCheck
+pm_GDPGross,input,added by codeCheck
+pm_ttot_val,input,added by codeCheck
+pm_ttot_2_tall,input,added by codeCheck
+cm_emiscen,input,added by codeCheck
+cm_co2_tax_2020,input,added by codeCheck
+cm_iterative_target_adj,input,added by codeCheck
+cm_NDC_divergentScenario,input,added by codeCheck
+cm_expoLinear_yearStart,input,added by codeCheck
+cm_carbonprice_temperatureLimit,input,added by codeCheck
+pm_consPC,input,added by codeCheck
+pm_prtp,input,added by codeCheck
