@@ -142,6 +142,17 @@ prepare <- function() {
   tmpModelFile <- sub(".gms", paste0("_", cfg$title, ".gms"), cfg$model)
   file.copy(cfg$model, tmpModelFile, overwrite = TRUE)
   manipulateConfig(tmpModelFile, cfg$gms)
+  cfg_after <- checkFixCfg(gms::readDefaultConfig(".", tmpModelFile), remindPath = cfg$remind_folder)
+  if (! equal(cfg$gms, cfg_after$gms)) {
+    # check for switches with different content between old and new cfg
+    joinednames <- intersect(names(cfg_after$gms), names(cfg$gms))
+    contentdiff <- joinednames[! unlist(cfg$gms[joinednames]) == unlist(cfg_after$gms[joinednames])]
+    if (length(contentdiff) > 0) {
+      message("After file manipulation, the following cfg$gms switches differ, see ", basename(tmpModelFile), ":\n",
+              paste0("- ", contentdiff, ": ", unlist(cfg$gms[contentdiff]), " -> ", unlist(cfg_after$gms[contentdiff]), collapse = "\n"))
+    }
+    stop("After manipulateConfig and reading cfg$gms again, there was a difference.")
+  }
 
   ######## declare functions for updating information ####
   update_info <- function(regionscode, revision, model_version) {
