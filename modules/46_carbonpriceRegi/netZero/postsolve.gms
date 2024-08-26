@@ -14,8 +14,19 @@ p46_emi_2020(regi) = vm_co2eq.l("2020",regi) * sm_c_2_co2 * 1000;
 
 ***define offsets
 p46_offset(all_regi) = 0;
-$ifthen.offsets "%cm_netZeroScen%" == "ENGAGE4p5_GlP"
+$ifthen.offsets "%cm_netZeroScen%" == "ELEVATE2p3"
   p46_offset(nz_reg)$(sameas(nz_reg, "EUR")) = 100;
+
+  
+  Execute_Loadpoint 'input_ref' p46_ref_co2eq = vm_co2eq.l;
+
+  p46_offset(nz_reg)$(sameas(nz_reg, "LAM")) = p46_ref_co2eq("2050", nz_reg) * sm_c_2_co2 * 1000 - p46_ref_co2eq("2020", nz_reg) * sm_c_2_co2 * 1000 * 0.68;
+  p46_offset(nz_reg)$(sameas(nz_reg, "MEA")) = p46_ref_co2eq("2055", nz_reg) * sm_c_2_co2 * 1000 - p46_ref_co2eq("2020", nz_reg) * sm_c_2_co2 * 1000 * 0.47;
+  p46_offset(nz_reg)$(sameas(nz_reg, "NEU")) = p46_ref_co2eq("2055", nz_reg) * sm_c_2_co2 * 1000 - p46_ref_co2eq("2020", nz_reg) * sm_c_2_co2 * 1000 * 0.89;
+  p46_offset(nz_reg)$(sameas(nz_reg, "OAS")) = p46_ref_co2eq("2055", nz_reg) * sm_c_2_co2 * 1000 - p46_ref_co2eq("2020", nz_reg) * sm_c_2_co2 * 1000 * 0.89;
+  p46_offset(nz_reg)$(sameas(nz_reg, "SSA")) = p46_ref_co2eq("2055", nz_reg) * sm_c_2_co2 * 1000 - p46_ref_co2eq("2020", nz_reg) * sm_c_2_co2 * 1000 * 0.73;
+  p46_offset(nz_reg)$(sameas(nz_reg, "REF")) = p46_ref_co2eq("2060", nz_reg) * sm_c_2_co2 * 1000 - p46_ref_co2eq("2020", nz_reg) * sm_c_2_co2 * 1000 * 0.85;
+
 $elseif.offsets "%cm_netZeroScen%" == "NGFS_v4_20pc"
   p46_offset(nz_reg) = 0.2 * vm_co2eq.l("2020", nz_reg) * sm_c_2_co2 * 1000;
   p46_offset(nz_reg)$(sameas(nz_reg, "LAM")) = 0.6 * vm_co2eq.l("2020", nz_reg) * sm_c_2_co2 * 1000;

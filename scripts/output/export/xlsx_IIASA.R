@@ -33,6 +33,8 @@ lucode2::readArgs("project")
 projects <- list(
   ELEVATE    = list(mapping = c("NAVIGATE", "ELEVATE"),
                     iiasatemplate = "elevate-workflow/definitions/variable/variable.yaml"),
+  ELEVATE_coupled    = list(mapping = c("NAVIGATE","NAVIGATE_coupled", "ELEVATE"),
+                    iiasatemplate = "https://files.ece.iiasa.ac.at/elevate/elevate-template.xlsx"),                  
   ENGAGE_4p5 = list(mapping = c("AR6", "AR6_NGFS"),
                     iiasatemplate = "ENGAGE_CD-LINKS_template_2019-08-22.xlsx",
                     removeFromScen = "_diff|_expoLinear|-all_regi"),
@@ -125,7 +127,7 @@ withCallingHandlers({ # piping messages to logFile
   for (mif in mif_path) {
     thismifdata <- read.quitte(mif, factors = FALSE)
     # remove -rem-xx and mag-xx from scenario names
-    thismifdata$scenario <- gsub("-(rem|mag)-[0-9]{1,2}", "", thismifdata$scenario)
+    thismifdata$scenario <- gsub("^C_", "", gsub("-(rem|mag)-[0-9]{1,2}", "", thismifdata$scenario))
     mifdata <- rbind(mifdata, thismifdata)
   }
 
