@@ -378,6 +378,8 @@ $setglobal emicapregi  none           !! def = none
 *' * (linear): linear increase over time of the tax level in 2020 set via cm_co2_tax_2020 (combined with emiscen = 9 and cm_co2_tax_2020>0)
 *' * (temperatureNotToExceed): [test and verify before using it!] Find the optimal carbon carbon tax (set cm_emiscen = 1, iterative_target_adj = 9] curved convergence of CO2 prices between regions until cm_CO2priceRegConvEndYr; developed countries have linear path from 0 in 2010 through cm_co2_tax_2020 in 2020;
 *' * (diffCurvPhaseIn2Lin): [REMIND 2.1 default for validation peakBudget runs, in combination with iterative_target_adj = 9] curved convergence of CO2 prices between regions until cm_CO2priceRegConvEndYr; developed countries have linear path from 0 in 2010 through cm_co2_tax_2020 in 2020;
+*' * (diffExp2Lin): quadratic convergence of CO2 prices between regions until cm_CO2priceRegConvEndYr; starting level of differentiation in cm_startyear is given by cm_co2_tax_spread; developed countries have exponential path until peak year (with iterative_target_adj = 9) or until 2100 (with iterative_target_adj = 5);
+*' * (diffLin2Lin): [Variant of diffCurvPhaseIn2Lin, will be further developed before becoming the new default] quadratic convergence of CO2 prices between regions until cm_CO2priceRegConvEndYr; starting level of differentiation in cm_startyear is given by cm_co2_tax_spread; developed countries have linear path until peak year (with iterative_target_adj = 9) or until 2100 (with iterative_target_adj = 5);
 *' * (NDC): implements a carbon price trajectory consistent with the NDC targets (up to 2030) and a trajectory of comparable ambition post 2030 (1.25%/yr price increase and regional convergence of carbon price). Choose version using cm_NDC_version "2023_cond", "2023_uncond", or replace 2023 by 2022, 2021 or 2018 to get all NDC published until end of these years.
 *' * (NPi): National Policies Implemented, extrapolation of historical (until 2020) carbon prices
 $setglobal carbonprice  none           !! def = none
@@ -508,8 +510,8 @@ parameter
 parameter
   cm_co2_tax_growth         "growth rate of carbon tax"
 ;
-  cm_co2_tax_growth = 1.05;            !! def = 1.05  !! regexp = is.numeric
-*'  (any number >= 0): rate of exponential increase over time
+  cm_co2_tax_growth = 1.045;            !! def = 1.045  !! regexp = is.numeric
+*'  (any number >= 0): rate of exponential increase over time, default value chosen to be consistent with interest rate
 parameter
   c_macscen                 "scenario switch on whether or not to use MAC (Marginal Abatement Cost) for certain sectors not related to direct combustion of fossil fuel, e.g. fugitive emissions from old mines, forestry, agriculture and cement"
 ;
@@ -817,7 +819,7 @@ parameter
 *' * (5): iterative adjustment of CO2 tax based on economy-wide CO2 cumulative emission budget(2020-2100), for runs with emission budget or CO2 tax constraints. See core/postsolve.gms for direct algorithms
 *' * (6): iterative adjustment of CO2 tax based on economy-wide CO2 cumulative emission peak budget, for runs with emission budget or CO2 tax constraints. See core/postsolve.gms for direct algorithms
 *' * (7): iterative adjustment of CO2 tax based on economy-wide CO2 cumulative emission peak budget, for runs with emission budget or CO2 tax constraints. Features: results in a peak budget with zero net CO2 emissions after peak budget is reached. See core/postsolve.gms for direct algorithms
-*' * (9): [require the right settings in 45_carbonprice] iterative adjustment of CO2 tax based on economy-wide CO2 cumulative emission peak budget, for runs with emission budget or CO2 tax constraints. Features: 1) after the year when budget peaks, CO2 tax has an annual increase by c_taxCO2inc_after_peakBudgYr, 2) automatically shifts c_peakBudgYr to find the correct year of budget peaking for a given budget. For REMIND version v2.1 or above.
+*' * (9): [require the right settings in 45_carbonprice] iterative adjustment of CO2 tax based on economy-wide CO2 cumulative emission peak budget, for runs with emission budget or CO2 tax constraints. Features: 1) after the year when budget peaks, CO2 tax has an annual increase by cm_taxCO2inc_after_peakBudgYr, 2) automatically shifts c_peakBudgYr to find the correct year of budget peaking for a given budget. For REMIND version v2.1 or above.
 *'
 parameter
   cm_NDC_divergentScenario  "choose scenario about convergence of CO2eq prices [45_carbonprice = NDC]"
@@ -972,15 +974,23 @@ parameter
   c_peakBudgYr            = 2050;   !! def = 2050
 *'   time of net-zero CO2 emissions (peak budget), requires emiscen to 9 and cm_iterative_target_adj to 7, will potentially be adjusted by algorithms
 parameter
-  c_taxCO2inc_after_peakBudgYr "annual increase of CO2 tax after the Peak Budget Year in $ per tCO2"
+  cm_taxCO2inc_after_peakBudgYr "annual increase of CO2 tax after the Peak Budget Year in $ per tCO2"
 ;
-  c_taxCO2inc_after_peakBudgYr = 0; !! def = 0 . For weak targets (higher than 1100 Peak Budget), this value might need to increased to prevent continually increasing temperatures
+  cm_taxCO2inc_after_peakBudgYr = 0; !! def = 0 . For weak targets (higher than 1100 Peak Budget), this value might need to increased to prevent continually increasing temperatures
 *'
 parameter
   cm_CO2priceRegConvEndYr      "Year at which regional CO2 taxes converge in module 45 realization diffCurvPhaseIn2Lin"
 ;
   cm_CO2priceRegConvEndYr  = 2050;   !! def = 2050
 *'
+parameter
+  cm_co2_tax_spread            "spread of carbon prices in 2025 given as a factor"
+;
+  cm_co2_tax_spread        = 10;     !! def = 10  !! regexp = 1|10|20
+*'  Initial spread of carbon prices (in 2025) between the regions with highest respectively lowest GDP per capita (PPP)
+*' * (1) Uniform carbon pricing, i.e. no differentiation
+*' * (10) Spread of carbon prices in 2025 is equal to 10
+*' * (20) Spread of carbon prices in 2025 is equal to 20
 parameter
   c_teNoLearngConvEndYr      "Year at which regional costs of non-learning technologies converge"
 ;

@@ -22,20 +22,14 @@ docs:            ## Generate/update model HTML documentation in the doc/ folder
 
 update-renv:     ## Upgrade all pik-piam packages in your renv to the respective
                  ## latest release, write renv.lock into archive
-	Rscript -e 'piamenv::updateRenv()'
+	Rscript -e 'piamenv::updateRenv(exclude = "edgeTransport")'
+	version -u edgeTransport@1.5.5
 
 update-renv-all: ## Upgrade all packages (including CRAN packages) in your renv
                  ## to the respective latest release, write renv.lock archive
                  ## Upgrade all packages in python venv, if python venv exists
 	@Rscript -e 'renv::update(exclude = "renv"); piamenv::archiveRenv()'
-	@if [ -e "./venv/bin/python" ]; then \
-		pv_maj=$$( .venv/bin/python -V | sed 's/^Python \([0-9]\).*/\1/' ); \
-		pv_min=$$( .venv/bin/python -V | sed 's/^Python [0-9]\.\([0-9]\+\).*/\1/' ); \
-		if (( 3 == $$pv_maj )) && (( 7 <= $$pv_min )) && (( $pv_min < 11 )); then \
-			.venv/bin/python -mpip install --upgrade pip wheel; \
-			.venv/bin/python -mpip install --upgrade --upgrade-strategy eager -r requirements.txt; \
-		fi \
-	fi
+	version -u edgeTransport@1.5.5
 
 revert-dev-packages: ## All PIK-PIAM packages that are development versions, i.e.
                      ## that have a non-zero fourth version number component, are
@@ -92,7 +86,7 @@ test-coupled:    ## Test if the coupling with MAgPIE works. Takes significantly
 test-coupled-slurm: ## test-coupled, but on slurm
 	$(info Coupling tests take around 75 minutes to run. Sent to slurm, find log in test-coupled.log)
 	make ensure-reqs
-	@sbatch --qos=priority --wrap="make test-coupled" --job-name=test-coupled --mail-type=END --output=test-coupled.log --comment="test-coupled.log"
+	@sbatch --qos=priority --wrap="make test-coupled" --job-name=test-coupled --mail-type=END,FAIL --output=test-coupled.log --comment="test-coupled.log"
 
 test-full:       ## Run all tests, including coupling tests and a default
                  ## REMIND scenario. Takes several hours to run.
@@ -101,7 +95,7 @@ test-full:       ## Run all tests, including coupling tests and a default
 
 test-full-slurm: ##test-full, but on slurm
 	$(info Full tests take more than an hour to run, please be patient)
-	@sbatch --qos=priority --wrap="make test-full" --job-name=test-full --mail-type=END --output=test-full.log --comment="test-full.log"
+	@sbatch --qos=priority --wrap="make test-full" --job-name=test-full --mail-type=END,FAIL --output=test-full.log --comment="test-full.log"
 
 test-validation: ## Run validation tests, requires a full set of runs in the output folder
 	$(info Run validation tests, requires a full set of runs in the output folder)
