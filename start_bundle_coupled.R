@@ -58,7 +58,7 @@ if (! dir.exists(path_magpie)) path_magpie <- normalizePath(file.path(getwd(), "
 # path_settings_remind contains the detailed configuration of the REMIND scenarios
 # path_settings_coupled defines which runs will be started, coupling infos, and optimal gdx and report information that overrides path_settings_remind
 # these settings will be overwritten if you provide the path to the coupled file as first command line argument
-path_settings_coupled <- file.path(path_remind, "config", "scenario_config_coupled.csv")
+path_settings_coupled <- file.path(path_remind, "config", "scenario_config_coupled_ELEVATE2p3.csv")
 path_settings_remind  <- sub("scenario_config_coupled", "scenario_config", path_settings_coupled)
                          # file.path(path_remind, "config", "scenario_config.csv")
 
@@ -85,10 +85,10 @@ max_iterations <- 5
 n600_iterations <- 0 # max_iterations
 
 # Use this qos if none is specified in config file. "auto" means use "priority" slot if available, else "short"
-qos_default <- "auto"
+qos_default <- "short"
 
 # run a compareScenario for each scenario comparing all rem-x: Choose qos (short, priority) or set to FALSE
-run_compareScenarios <- "short"
+run_compareScenarios <- FALSE
 
 # use an empty magpie model (just reproduces the latest AMT results)
 magpie_empty <- FALSE
