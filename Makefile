@@ -22,20 +22,14 @@ docs:            ## Generate/update model HTML documentation in the doc/ folder
 
 update-renv:     ## Upgrade all pik-piam packages in your renv to the respective
                  ## latest release, write renv.lock into archive
-	Rscript -e 'piamenv::updateRenv()'
+	Rscript -e 'piamenv::updateRenv(exclude = "edgeTransport")'
+	version -u edgeTransport@1.5.5
 
 update-renv-all: ## Upgrade all packages (including CRAN packages) in your renv
                  ## to the respective latest release, write renv.lock archive
                  ## Upgrade all packages in python venv, if python venv exists
 	@Rscript -e 'renv::update(exclude = "renv"); piamenv::archiveRenv()'
-	@if [ -e "./venv/bin/python" ]; then \
-		pv_maj=$$( .venv/bin/python -V | sed 's/^Python \([0-9]\).*/\1/' ); \
-		pv_min=$$( .venv/bin/python -V | sed 's/^Python [0-9]\.\([0-9]\+\).*/\1/' ); \
-		if (( 3 == $$pv_maj )) && (( 7 <= $$pv_min )) && (( $pv_min < 11 )); then \
-			.venv/bin/python -mpip install --upgrade pip wheel; \
-			.venv/bin/python -mpip install --upgrade --upgrade-strategy eager -r requirements.txt; \
-		fi \
-	fi
+	version -u edgeTransport@1.5.5
 
 revert-dev-packages: ## All PIK-PIAM packages that are development versions, i.e.
                      ## that have a non-zero fourth version number component, are

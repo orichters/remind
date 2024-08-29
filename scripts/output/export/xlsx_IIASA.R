@@ -1,4 +1,4 @@
-# |  (C) 2006-2023 Potsdam Institute for Climate Impact Research (PIK)
+# |  (C) 2006-2024 Potsdam Institute for Climate Impact Research (PIK)
 # |  authors, and contributors see CITATION.cff file. This file is part
 # |  of REMIND and licensed under AGPL-3.0-or-later. Under Section 7 of
 # |  AGPL-3.0, you are granted additional permissions described in the
@@ -32,17 +32,15 @@ lucode2::readArgs("project")
 
 projects <- list(
   ELEVATE    = list(mapping = c("NAVIGATE", "ELEVATE"),
-                    iiasatemplate = "elevate-workflow/definitions/variable/variable.yaml"),
-  ELEVATE_coupled    = list(mapping = c("NAVIGATE","NAVIGATE_coupled", "ELEVATE"),
-                    iiasatemplate = "https://files.ece.iiasa.ac.at/elevate/elevate-template.xlsx"),                  
+                    iiasatemplate = "https://files.ece.iiasa.ac.at/elevate/elevate-template.xlsx"),
   ENGAGE_4p5 = list(mapping = c("AR6", "AR6_NGFS"),
                     iiasatemplate = "ENGAGE_CD-LINKS_template_2019-08-22.xlsx",
                     removeFromScen = "_diff|_expoLinear|-all_regi"),
   NAVIGATE_coupled = list(mapping = c("NAVIGATE", "NAVIGATE_coupled")),
   NGFS       = list(model = "REMIND-MAgPIE 3.3-4.8",
                     mapping = c("AR6", "AR6_NGFS"),
-                    iiasatemplate = "../iiasa-workflow/definitions/variable/variables.yaml",
-                    removeFromScen = "C_|_bIT|_bit|_bIt"),
+                    iiasatemplate = "https://files.ece.iiasa.ac.at/ngfs-phase-5/ngfs-phase-5-template.xlsx",
+                    removeFromScen = "C_|_bIT|_bit|_bIt|_KLW"),
   SHAPE      = list(mapping = c("NAVIGATE", "SHAPE")),
   TESTTHAT   = list(mapping = "AR6")
 )
@@ -127,7 +125,7 @@ withCallingHandlers({ # piping messages to logFile
   for (mif in mif_path) {
     thismifdata <- read.quitte(mif, factors = FALSE)
     # remove -rem-xx and mag-xx from scenario names
-    thismifdata$scenario <- gsub("^C_", "", gsub("-(rem|mag)-[0-9]{1,2}", "", thismifdata$scenario))
+    thismifdata$scenario <- gsub("-(rem|mag)-[0-9]{1,2}", "", thismifdata$scenario)
     mifdata <- rbind(mifdata, thismifdata)
   }
 
