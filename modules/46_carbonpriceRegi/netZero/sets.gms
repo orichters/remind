@@ -22,7 +22,7 @@ SETS
     nz_reg2060(all_regi)    "regions with net-zero 2060 target"   / "CHA","REF" /
     nz_reg2070(all_regi)    "regions with net-zero 2070 target"   / "IND" /
     nz_reg2080(all_regi)    "regions with net-zero 2080 target"   /  /
-    nz_reg_CO2(all_regi)    "regions with CO2, not GHG target"    / "OAS","NEU","SSA", "LAM","MEA", "REF",  "CHA" /
+    nz_reg_CO2(all_regi)    "regions with CO2, not GHG target"    / "OAS","NEU","SSA", "LAM","MEA", "REF",  "CHA", "IND" /
 ;
 $else.scen
     $error 'In 46_carbonpriceRegi/netZero/sets.gms, no settings for the specified cm_netZeroScen found'
