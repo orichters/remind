@@ -18,7 +18,7 @@ elseif cm_co2_tax_startyear gt 0,
 );
 
 *** calculate tax path until cm_expoLinear_yearStart (defaults to 2060)
-pm_taxCO2eq(t,regi) = s45_co2_tax_startyear*cm_co2_tax_growth**(t.val-cm_startyear+5);
+pm_taxCO2eq(t,regi) = s45_co2_tax_startyear*cm_co2_tax_growth**(t.val-cm_startyear);
 *** use linear tax path from cm_expoLinear_yearStart on (with slope given by last timestep before cm_expoLinear_yearStart)
 p45_tau_co2_tax_inc(regi) = sum(ttot$(ttot.val eq cm_expoLinear_yearStart),
                                 ((pm_taxCO2eq(ttot, regi) - pm_taxCO2eq(ttot - 1, regi)) / (pm_ttot_val(ttot) - pm_ttot_val(ttot - 1)))); !! Using ttot to make use of pm_ttot_val
