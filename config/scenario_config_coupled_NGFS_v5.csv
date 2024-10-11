@@ -1,4 +1,4 @@
-title;start;copyConfigFrom;oldrun;path_report;qos;magpie_scen;no_ghgprices_land_until;.cm_nash_autoconverge_lastrun;path_gdx;path_gdx_ref;path_gdx_bau;path_gdx_carbonprice
+title;start;copyConfigFrom;oldrun;path_report;qos;magpie_scen;no_ghgprices_land_until;cm_nash_autoconverge_lastrun;path_gdx;path_gdx_ref;path_gdx_bau;path_gdx_carbonprice
 SSP2-Base;;;SSP2-Base;;;SSP2|NPI|nocc_hist|rcp4p5;y2150;;;;;
 h_cpol_noUkr;0;;h_cpol;;;SSP2|NPI|nocc_hist|rcp4p5;y2150;2;;;;
 h_cpol;NGFS;;h_cpol;;;SSP2|NPI|nocc_hist|rcp4p5;y2150;2;;;;
@@ -15,6 +15,7 @@ o_2c_lessBECCS;BECCS;o_2c;o_2c;;;;;;;;;
 d_delfrag_lessBECCS;BECCS;d_delfrag;d_delfrag;;;;;;;;;
 d_strain;NGFS;;d_strain;;;SSP2|NDC|nocc_hist|rcp4p5;y2030;2;;;;
 h_cpol_KLW_d50;d50nm;h_cpol;h_cpol;;;SSP2|NPI|cc|rcp4p5;;;;;;
+h_cpol_KLW_d50_dlfix;d50nm;h_cpol;h_cpol;;;SSP2|NPI|cc|rcp4p5;;;;;;
 h_cpol_KLW_d5;d50nm;h_cpol;h_cpol;;;SSP2|NPI|cc|rcp4p5;;;;;;
 h_cpol_KLW_d95;d50nm;h_cpol;h_cpol;;;SSP2|NPI|cc|rcp4p5;;;;;;
 h_ndc_KLW_d50;d50nm;h_ndc;h_ndc;;;SSP2|NDC|cc|rcp4p5;;;;;;
