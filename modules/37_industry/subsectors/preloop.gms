@@ -1,4 +1,4 @@
-*** |  (C) 2006-2023 Potsdam Institute for Climate Impact Research (PIK)
+*** |  (C) 2006-2024 Potsdam Institute for Climate Impact Research (PIK)
 *** |  authors, and contributors see CITATION.cff file. This file is part
 *** |  of REMIND and licensed under AGPL-3.0-or-later. Under Section 7 of
 *** |  AGPL-3.0, you are granted additional permissions described in the
@@ -8,6 +8,7 @@
 
 *** initialize captured CO2 parameter
 pm_IndstCO2Captured(t,regi,entySe,entyFe,secInd37,emiMkt) = 0;
+pm_NonFos_IndCC_fraction0(ttot,all_regi,emiInd37) = 0;
 
 *' calculate carbon content of feedstock for chemicals subsector as difference between
 *' combustion emissions factor of FE and industrial process emissions factor

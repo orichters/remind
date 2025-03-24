@@ -1,4 +1,4 @@
-*** |  (C) 2006-2023 Potsdam Institute for Climate Impact Research (PIK)
+*** |  (C) 2006-2024 Potsdam Institute for Climate Impact Research (PIK)
 *** |  authors, and contributors see CITATION.cff file. This file is part
 *** |  of REMIND and licensed under AGPL-3.0-or-later. Under Section 7 of
 *** |  AGPL-3.0, you are granted additional permissions described in the
@@ -78,10 +78,23 @@ pm_IndstCO2Captured(ttot,regi,entySe,entyFe(entyFeCC37),secInd37,emiMkt)$(
       vm_emiIndCCS.l(ttot,regi,emiInd37)
       ) !! subsector captured energy emissions
 
-    / sum(entyFE2,
-        vm_emiIndBase.l(ttot,regi,entyFE2,secInd37)
+    / sum(entyFeCC37_2,
+        vm_emiIndBase.l(ttot,regi,entyFeCC37_2,secInd37)
       ) !! subsector total energy emissions
     ) !! subsector capture share
+;
+
+
+*** calculate share of sebio- and sesyn-based co2 captured
+pm_NonFos_IndCC_fraction0(ttot,regi,emiInd37)$(
+              sum(secInd37$secInd37_2_emiInd37(secInd37,emiInd37),
+                  (sum((entySe,entyFe,emiMkt),
+                        pm_IndstCO2Captured(ttot,regi,entySe,entyFe,secInd37,emiMkt))))) 
+  = sum(secInd37$secInd37_2_emiInd37(secInd37,emiInd37), 
+        sum( (entySe,entyFe, emiMkt)$(NOT (entySeFos(entySe))), 
+          pm_IndstCO2Captured(ttot,regi,entySe,entyFe,secInd37,emiMkt)) 
+    / (sum((entySe,entyFe,emiMkt), 
+          pm_IndstCO2Captured(ttot,regi,entySe,entyFe,secInd37,emiMkt))))
 ;
 
 

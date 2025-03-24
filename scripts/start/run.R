@@ -1,4 +1,4 @@
-# |  (C) 2006-2023 Potsdam Institute for Climate Impact Research (PIK)
+# |  (C) 2006-2024 Potsdam Institute for Climate Impact Research (PIK)
 # |  authors, and contributors see CITATION.cff file. This file is part
 # |  of REMIND and licensed under AGPL-3.0-or-later. Under Section 7 of
 # |  AGPL-3.0, you are granted additional permissions described in the
@@ -8,11 +8,6 @@
 run <- function() {
 
   load("config.Rdata")
-
-  if (cfg$pythonEnabled == "on"){
-    # Set environment variables so that reticulate finds the configured Python virtual env
-    Sys.setenv(RETICULATE_PYTHON = piamenv::pythonBinPath(".venv"))
-  }
 
   # Save start time
   timeGAMSStart <- Sys.time()
@@ -141,7 +136,10 @@ run <- function() {
                          config     = cfg,
                          runtime    = gams_runtime,
                          setup_info = lucode2::setup_info(),
-                         submit     = cfg$runstatistics)
+                         submit     = cfg$runstatistics,
+                         timeGAMSStart = timeGAMSStart,
+                         timeGAMSEnd   = timeGAMSEnd
+  )
 
   if (modelSummaryData[["stoprun"]]) {
     stop("GAMS did not complete its run, so stopping here:\n       No output is generated, no subsequent runs are started.\n",
@@ -258,7 +256,10 @@ run <- function() {
 
   # make sure the renv used for the run is also used for generating output
   if (!is.null(renv::project())) {
-    stopifnot(`loaded renv and outputdir must be equal` = normalizePath(renv::project()) == normalizePath(outputdir))
+    if (normalizePath(renv::project()) != normalizePath(outputdir)) {
+      warning("loaded renv=", normalizePath(renv::project()), " and outputdir=", normalizePath(outputdir), " must be equal.")
+    }
+    message("Using ", normalizePath(renv::project()), " as renv project")
     argv <- c(get0("argv"), paste0("--renv=", renv::project()))
   }
 
@@ -267,10 +268,8 @@ run <- function() {
   timeOutputEnd <- Sys.time()
 
   # Save run statistics to local file
-  cat("\nSaving timeGAMSStart, timeGAMSEnd, timeOutputStart and timeOutputStart to runstatistics.rda\n")
+  cat("\nSaving timeOutputStart and timeOutputEnd to runstatistics.rda\n")
   lucode2::runstatistics(file           = paste0(cfg$results_folder, "/runstatistics.rda"),
-                       timeGAMSStart   = timeGAMSStart,
-                       timeGAMSEnd     = timeGAMSEnd,
                        timeOutputStart = timeOutputStart,
                        timeOutputEnd   = timeOutputEnd)
 

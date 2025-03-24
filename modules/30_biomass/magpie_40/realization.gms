@@ -1,4 +1,4 @@
-*** |  (C) 2006-2023 Potsdam Institute for Climate Impact Research (PIK)
+*** |  (C) 2006-2024 Potsdam Institute for Climate Impact Research (PIK)
 *** |  authors, and contributors see CITATION.cff file. This file is part
 *** |  of REMIND and licensed under AGPL-3.0-or-later. Under Section 7 of
 *** |  AGPL-3.0, you are granted additional permissions described in the
@@ -18,7 +18,6 @@ $Ifi "%phase%" == "equations" $include "./modules/30_biomass/magpie_40/equations
 $Ifi "%phase%" == "preloop" $include "./modules/30_biomass/magpie_40/preloop.gms"
 $Ifi "%phase%" == "bounds" $include "./modules/30_biomass/magpie_40/bounds.gms"
 $Ifi "%phase%" == "presolve" $include "./modules/30_biomass/magpie_40/presolve.gms"
-$Ifi "%phase%" == "postsolve" $include "./modules/30_biomass/magpie_40/postsolve.gms"
 $Ifi "%phase%" == "output" $include "./modules/30_biomass/magpie_40/output.gms"
 *######################## R SECTION END (PHASES) ###############################
 *** EOF ./modules/30_biomass/magpie_40/realization.gms

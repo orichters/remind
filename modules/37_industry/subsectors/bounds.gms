@@ -1,4 +1,4 @@
-*** |  (C) 2006-2023 Potsdam Institute for Climate Impact Research (PIK)
+*** |  (C) 2006-2024 Potsdam Institute for Climate Impact Research (PIK)
 *** |  authors, and contributors see CITATION.cff file. This file is part
 *** |  of REMIND and licensed under AGPL-3.0-or-later. Under Section 7 of
 *** |  AGPL-3.0, you are granted additional permissions described in the
@@ -18,7 +18,7 @@ $ifthen.secondary_steel_bound "%cm_secondary_steel_bound%" == "yearly"
 vm_cesIO.up(ttot,regi,"ue_steel_secondary")
   = min(
       vm_cesIO.up(ttot,regi,"ue_steel_secondary"),
-      p37_cesIO_up_steel_secondary(ttot,regi,"%cm_GDPscen%")
+      p37_cesIO_up_steel_secondary(ttot,regi,"%cm_GDPpopScen%")
     );
 $elseif.secondary_steel_bound "%cm_secondary_steel_bound%" == "scenario"
 $ifthen.rcp_scen "%cm_rcp_scen%" == "none"
@@ -27,7 +27,7 @@ $ifthen.rcp_scen "%cm_rcp_scen%" == "none"
   !! steel production and the upper bound with increased recycling rates are
   !! available for increased production.
   vm_cesIO.up(t,regi,"ue_steel_secondary")
-    = ( ( p37_cesIO_up_steel_secondary(t,regi,"%cm_GDPscen%")
+    = ( ( p37_cesIO_up_steel_secondary(t,regi,"%cm_GDPpopScen%")
         / pm_fedemand(t,regi,"ue_steel_secondary")
         - 1
         )
@@ -41,7 +41,7 @@ $elseif.rcp_scen "%cm_rcp_scen%" == "rcp85"
   !! steel production and the upper bound with increased recycling rates are
   !! available for increased production.
   vm_cesIO.up(t,regi,"ue_steel_secondary")
-    = ( ( p37_cesIO_up_steel_secondary(t,regi,"%cm_GDPscen%")
+    = ( ( p37_cesIO_up_steel_secondary(t,regi,"%cm_GDPpopScen%")
         / pm_fedemand(t,regi,"ue_steel_secondary")
         - 1
         )
@@ -55,7 +55,7 @@ $elseif.rcp_scen "%cm_rcp_scen%" == "rcp60"
   !! steel production and the upper bound with increased recycling rates are
   !! available for increased production.
   vm_cesIO.up(t,regi,"ue_steel_secondary")
-    = ( ( p37_cesIO_up_steel_secondary(t,regi,"%cm_GDPscen%")
+    = ( ( p37_cesIO_up_steel_secondary(t,regi,"%cm_GDPpopScen%")
         / pm_fedemand(t,regi,"ue_steel_secondary")
         - 1
         )
@@ -69,7 +69,7 @@ $elseif.rcp_scen "%cm_rcp_scen%" == "rcp45"
   !! steel production and the upper bound with increased recycling rates are
   !! available for increased production.
   vm_cesIO.up(t,regi,"ue_steel_secondary")
-    = ( ( p37_cesIO_up_steel_secondary(t,regi,"%cm_GDPscen%")
+    = ( ( p37_cesIO_up_steel_secondary(t,regi,"%cm_GDPpopScen%")
         / pm_fedemand(t,regi,"ue_steel_secondary")
         - 1
         )
@@ -81,7 +81,7 @@ $else.rcp_scen
   !! In policy scenarios, secondary steel production can be increased up to the
   !! limit of theoretical scrap availability.
   vm_cesIO.up(t,regi,"ue_steel_secondary")
-    = p37_cesIO_up_steel_secondary(t,regi,"%cm_GDPscen%");
+    = p37_cesIO_up_steel_secondary(t,regi,"%cm_GDPpopScen%");
 $endif.rcp_scen
 $endif.secondary_steel_bound
 $endif.CES_parameters
@@ -118,7 +118,7 @@ vm_cesIO.lo(t,regi_dyn29(regi),in_industry_dyn37(in))$(
 *' higher) of baseline solids
 *' Cement CCS might otherwise become a compelling BioCCS option under very high
 *' carbon prices due to missing adjustment costs.
-if (cm_startyear gt 2005,   !! not a baeline or NPi scenario
+if (cm_startyear gt 2005,   !! not a baseline or NPi scenario
   vm_demFeSector_afterTax.up(t,regi,"sesobio","fesos","indst","ETS")
   = max(0.25 , smax(t2, pm_secBioShare(t2,regi,"fesos","indst") ) )
     * p37_BAU_industry_ETS_solids(t,regi);
@@ -133,25 +133,15 @@ $ifthen.policy_scenario "%cm_indstExogScen_set%" == "YES"
 $endif.policy_scenario
 $drop cm_indstExogScen_set
 
+v37_regionalWasteIncinerationCCSshare.lo(t,regi) = 0.;
+v37_regionalWasteIncinerationCCSshare.up(t,regi) = p37_regionalWasteIncinerationCCSMaxShare(t,regi);
 
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
 !! fix processes procudction in historic years
 if (cm_startyear eq 2005,
-  loop(regi,
-    loop(tePrc2opmoPrc(tePrc,opmoPrc),
-      vm_outflowPrc.fx('2005',regi,tePrc,opmoPrc) = pm_outflowPrcIni(regi,tePrc,opmoPrc);
+    loop((ttot,regi,tePrc2opmoPrc(tePrc,opmoPrc))$(ttot.val ge 2005 AND ttot.val le 2020),
+      vm_outflowPrc.fx(ttot,regi,tePrc,opmoPrc) = pm_outflowPrcHist(ttot,regi,tePrc,opmoPrc);
     );
-  );
-
-  loop(regi,
-    loop(ttot$(ttot.val ge 2005 AND ttot.val le 2020),
-      vm_outflowPrc.fx(ttot,regi,'eaf','pri') = 0.;
-      vm_outflowPrc.fx(ttot,regi,'idr','ng') = 0.;
-      vm_outflowPrc.fx(ttot,regi,'idr','h2') = 0.;
-      vm_outflowPrc.fx(ttot,regi,'bfcc','standard') = 0.;
-      vm_outflowPrc.fx(ttot,regi,'idrcc','ng') = 0.;
-    );
-  );
 );
 
 !! Switch to turn off steel CCS
@@ -171,5 +161,7 @@ loop ((ue_industry_dyn37(in),regi_groupExt(regi_fxDem37(ext_regi),regi)),
 );
 $endif.fixedUE_scenario
 
+!! Fix to avoid reoccurring random infeasibilities. May need to be excluded if e.g. synfuels (or something else) are set to zero.
+vm_demFeSector_afterTax.lo(t,regi,entySe,"fesos","indst",emiMkt)$(NOT sameAs(emiMkt, "other")) = 1e-16;
 
 *** EOF ./modules/37_industry/subsectors/bounds.gms

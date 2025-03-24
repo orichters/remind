@@ -1,4 +1,4 @@
-*** |  (C) 2006-2023 Potsdam Institute for Climate Impact Research (PIK)
+*** |  (C) 2006-2024 Potsdam Institute for Climate Impact Research (PIK)
 *** |  authors, and contributors see CITATION.cff file. This file is part
 *** |  of REMIND and licensed under AGPL-3.0-or-later. Under Section 7 of
 *** |  AGPL-3.0, you are granted additional permissions described in the
@@ -18,7 +18,7 @@ Parameters
   p29_cesdata_load(tall,all_regi,all_in,cesParameter)  "pm_cesdata from the gdx file"
   p29_cesIO_load(tall,all_regi,all_in)                "production factor vm_cesIO from input.gdx"
   p29_effGr(tall,all_regi,all_in)                                   "growth of factor efficiency from input.gdx"
-  p29_trpdemand(tall,all_regi,all_GDPscen,all_demScen,EDGE_scenario_all,all_in) "transport demand for the edge_esm transport module, unit: trillion passenger/ton km"
+  p29_trpdemand(tall,all_regi,all_GDPpopScen,all_demScen,EDGE_scenario_all,all_in) "transport demand for the edge_esm transport module, unit: trillion passenger/ton km"
   p29_efficiency_growth(tall,all_regi,all_in)         "efficency level paths for ppf beyond calibration"
   p29_capitalQuantity(tall,all_regi,all_in)            "capital quantities"
   p29_capitalPrice(tall,all_regi)                "capital prices"
